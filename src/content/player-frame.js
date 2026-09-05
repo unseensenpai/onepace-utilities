@@ -5,6 +5,7 @@ function getVideo() {
 }
 
 function emit(event, detail) {
+  if (typeof chrome?.runtime?.sendMessage !== 'function') return;
   chrome.runtime.sendMessage({ type: 'ONEPACE_PLAYER_EVENT', event, detail });
 }
 
@@ -37,9 +38,11 @@ new MutationObserver(() => bindVideo(getVideo())).observe(document.documentEleme
 });
 bindVideo(getVideo());
 
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.type !== 'ONEPACE_PLAYER_PREFERENCES') return;
-  currentPreferences = message.payload;
-  bindVideo(getVideo());
-  applyPreferences(getVideo());
-});
+if (typeof chrome?.runtime?.onMessage?.addListener === 'function') {
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.type !== 'ONEPACE_PLAYER_PREFERENCES') return;
+    currentPreferences = message.payload;
+    bindVideo(getVideo());
+    applyPreferences(getVideo());
+  });
+}
