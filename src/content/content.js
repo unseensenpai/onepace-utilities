@@ -7,7 +7,9 @@ const DEFAULT_SETTINGS = {
   playbackRate: 1,
   customStartSeconds: 0,
   useResume: true,
-  preferredSource: 'automatic'
+  preferredSource: 'automatic',
+  language: 'tr',
+  arcMasterOpen: true
 };
 
 let lastEpisodeNumber = null;
@@ -15,6 +17,16 @@ let progressRecords = [];
 let settings = { ...DEFAULT_SETTINGS };
 let lastPositionSave = 0;
 let autoAdvanceTimer = null;
+
+const TRANSLATIONS = {
+  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', source: 'Kaynak', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü tamamlandı yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal' },
+  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark episode complete', reset: 'Reset episode progress', language: 'Language', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel' },
+  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir el siguiente episodio automáticamente', markCompleted: 'Marcar episodio como completado', reset: 'Restablecer progreso', language: 'Idioma', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar' }
+};
+
+function t(key) {
+  return TRANSLATIONS[settings.language]?.[key] ?? TRANSLATIONS.tr[key] ?? key;
+}
 
 function getEpisodeNumber() {
   return Number(location.pathname.match(/\/bolum\/(\d+)/)?.[1] ?? 0);
@@ -114,12 +126,12 @@ function beginAutoAdvance(next) {
   let remaining = 5;
   const notice = document.createElement('div');
   notice.className = 'opu-countdown';
-  notice.innerHTML = `<span>Sonraki bölüm ${remaining} sn içinde açılacak</span><button>İptal</button>`;
+  notice.innerHTML = `<span>${t('nextIn')} ${remaining} sn</span><button>${t('cancel')}</button>`;
   panel.prepend(notice);
   const interval = setInterval(() => {
     remaining -= 1;
     const label = notice.querySelector('span');
-    if (label) label.textContent = `Sonraki bölüm ${remaining} sn içinde açılacak`;
+    if (label) label.textContent = `${t('nextIn')} ${remaining} sn`;
   }, 1000);
   notice.querySelector('button').addEventListener('click', () => {
     clearInterval(interval);
@@ -145,11 +157,16 @@ function render() {
   const existing = document.getElementById(ROOT_ID);
   const existingRail = document.getElementById('onepace-utilities-context');
   const existingDrawer = document.getElementById(SETTINGS_DRAWER_ID);
+  const existingArcToggle = document.getElementById('onepace-utilities-arc-toggle');
   if (existing) existing.remove();
   if (existingRail) existingRail.remove();
   if (existingDrawer) existingDrawer.remove();
+  if (existingArcToggle) existingArcToggle.remove();
   nativeList.style.display = 'none';
   document.documentElement.classList.add('opu-focus-mode');
+  const sideColumn = nativeList.closest('.col-lg-4');
+  sideColumn?.classList.toggle('opu-arc-hidden', !settings.arcMasterOpen);
+  document.documentElement.classList.toggle('opu-arc-master-hidden', !settings.arcMasterOpen);
 
   const root = document.createElement('section');
   root.id = ROOT_ID;
@@ -161,7 +178,7 @@ function render() {
     const completed = arc.episodes.filter((episode) => progressState(episode.number) === 'completed').length;
     const active = arc.episodes.some((episode) => episode.number === currentEpisode);
     return `<details class="opu-arc" ${active ? 'open' : ''}>
-      <summary><span>${arc.name}</span><small>${completed} / ${arc.episodes.length} tamamlandı</small></summary>
+      <summary><span>${arc.name}</span><small>${completed} / ${arc.episodes.length} ${t('completed')}</small></summary>
       <div class="opu-grid">${arc.episodes.map((episode) => {
         const state = progressState(episode.number);
         const record = getRecord(episode.number);
@@ -174,11 +191,11 @@ function render() {
   }).join('');
 
   root.innerHTML = `<header class="opu-header">
-    <div><strong>ARC MASTER</strong><span>${latest ? `Kaldığın yer: ${latest.episodeNumber}. Bölüm · ${formatTime(latest.positionSeconds)}` : 'İzleme geçmişin burada görünür'}</span></div>
-    <button class="opu-settings-toggle" aria-label="Oynatıcı ayarları">⚙</button>
+    <div><strong>${t('arcMaster')}</strong><span>${latest ? `${t('resumeAt')}: ${latest.episodeNumber}. Bölüm · ${formatTime(latest.positionSeconds)}` : t('history')}</span></div>
+    <span><button class="opu-collapse" aria-label="${t('closeArc')}">×</button><button class="opu-settings-toggle" aria-label="${t('settings')}">⚙</button></span>
   </header>
-  ${latest ? `<a class="opu-resume" href="/bolum/${latest.episodeNumber}">▶ Kaldığın yere dön</a>` : ''}
-  <div class="opu-arcs">${arcMarkup || '<p class="opu-empty">Bölüm listesi yükleniyor…</p>'}</div>`;
+  ${latest ? `<a class="opu-resume" href="/bolum/${latest.episodeNumber}">▶ ${t('resume')}</a>` : ''}
+  <div class="opu-arcs">${arcMarkup || `<p class="opu-empty">${t('loading')}</p>`}</div>`;
   nativeList.parentElement.insertBefore(root, nativeList);
 
   const drawer = document.createElement('aside');
@@ -186,24 +203,33 @@ function render() {
   drawer.className = 'opu-settings';
   drawer.hidden = true;
   drawer.innerHTML = `
-    <label><input type="checkbox" data-setting="useResume" ${settings.useResume ? 'checked' : ''}> Kaldığın yerden devam et</label>
-    <label>Yeni bölüm başlangıcı <input type="number" min="0" data-setting="customStartSeconds" value="${settings.customStartSeconds}"> sn</label>
-    <label>Hız <select data-setting="playbackRate">${[1, 1.25, 1.5, 2].map((rate) => `<option value="${rate}" ${settings.playbackRate === rate ? 'selected' : ''}>${rate}×</option>`).join('')}</select></label>
-    <label>Kaynak <select data-setting="preferredSource"><option value="automatic">Otomatik</option>${sourceOptions.map((source) => `<option value="${source}" ${settings.preferredSource === source ? 'selected' : ''}>${source}</option>`).join('')}</select></label>
-    <label><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> Sonraki bölüme otomatik geç</label>
-    <button data-action="complete">Bu bölümü tamamlandı yap</button>
-    <button data-action="reset">Bu bölümün ilerlemesini sıfırla</button>
+    <header><strong>${t('settings')}</strong><button data-action="close-settings">×</button></header>
+    <label>${t('language')} <select data-setting="language"><option value="tr" ${settings.language === 'tr' ? 'selected' : ''}>Türkçe</option><option value="en" ${settings.language === 'en' ? 'selected' : ''}>English</option><option value="es" ${settings.language === 'es' ? 'selected' : ''}>Español</option></select></label>
+    <label><input type="checkbox" data-setting="useResume" ${settings.useResume ? 'checked' : ''}> ${t('resumePosition')}</label>
+    <label>${t('newStart')} <input type="number" min="0" data-setting="customStartSeconds" value="${settings.customStartSeconds}"> sn</label>
+    <label>${t('speed')} <select data-setting="playbackRate">${[1, 1.25, 1.5, 2].map((rate) => `<option value="${rate}" ${settings.playbackRate === rate ? 'selected' : ''}>${rate}×</option>`).join('')}</select></label>
+    <label>${t('source')} <select data-setting="preferredSource"><option value="automatic">Otomatik</option>${sourceOptions.map((source) => `<option value="${source}" ${settings.preferredSource === source ? 'selected' : ''}>${source}</option>`).join('')}</select></label>
+    <label><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> ${t('autoAdvance')}</label>
+    <button data-action="complete">${t('markCompleted')}</button>
+    <button data-action="reset">${t('reset')}</button>
   `;
   document.body.append(drawer);
 
   root.querySelector('.opu-settings-toggle').addEventListener('click', () => {
     drawer.hidden = !drawer.hidden;
   });
+  root.querySelector('.opu-collapse').addEventListener('click', async () => {
+    settings.arcMasterOpen = false;
+    await setSyncStorage({ [SETTINGS_KEY]: settings });
+    render();
+  });
+  drawer.querySelector('[data-action="close-settings"]').addEventListener('click', () => { drawer.hidden = true; });
   drawer.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
     const key = control.dataset.setting;
     settings[key] = control.type === 'checkbox' ? control.checked : key === 'preferredSource' ? control.value : Number(control.value);
     await setSyncStorage({ [SETTINGS_KEY]: settings });
     applyPlayerPreferences();
+    if (key === 'language') render();
   }));
   drawer.querySelector('[data-action="complete"]').addEventListener('click', () => saveProgress(0, getRecord(currentEpisode)?.durationSeconds || 0, true));
   drawer.querySelector('[data-action="reset"]').addEventListener('click', () => {
@@ -214,6 +240,18 @@ function render() {
 
   window.__onepaceUtilitiesArcs = arcs;
   applyPlayerPreferences();
+
+  if (!settings.arcMasterOpen) {
+    const arcToggle = document.createElement('button');
+    arcToggle.id = 'onepace-utilities-arc-toggle';
+    arcToggle.textContent = `≡ ${t('openArc')}`;
+    arcToggle.addEventListener('click', async () => {
+      settings.arcMasterOpen = true;
+      await setSyncStorage({ [SETTINGS_KEY]: settings });
+      render();
+    });
+    document.body.append(arcToggle);
+  }
 }
 
 async function initialize() {
