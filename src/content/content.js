@@ -178,7 +178,7 @@ function beginAutoAdvance(next) {
   }, 5000);
 }
 
-function render({ applyStartPosition = false } = {}) {
+function render({ applyStartPosition = false, centerActiveEpisode = false } = {}) {
   const nativeList = document.querySelector('.episode-list');
   if (!nativeList) return;
   const arcs = parseGroups();
@@ -189,6 +189,7 @@ function render({ applyStartPosition = false } = {}) {
   const existingRail = document.getElementById('onepace-utilities-context');
   const existingDrawer = document.getElementById(SETTINGS_DRAWER_ID);
   const existingArcToggle = document.getElementById('onepace-utilities-arc-toggle');
+  const previousArcScrollTop = existing?.querySelector('.opu-arcs')?.scrollTop ?? 0;
   if (existing) existing.remove();
   if (existingRail) existingRail.remove();
   if (existingDrawer) existingDrawer.remove();
@@ -308,8 +309,10 @@ function render({ applyStartPosition = false } = {}) {
   requestAnimationFrame(() => {
     const arcScroller = root.querySelector('.opu-arcs');
     const activeCard = root.querySelector('.opu-episode.active');
-    if (arcScroller && activeCard) {
+    if (centerActiveEpisode && arcScroller && activeCard) {
       arcScroller.scrollTop = activeCard.offsetTop - arcScroller.offsetTop - arcScroller.clientHeight / 2;
+    } else if (arcScroller) {
+      arcScroller.scrollTop = previousArcScrollTop;
     }
   });
 
@@ -330,7 +333,7 @@ async function initialize() {
   progressRecords = await getStorage(PROGRESS_KEY) || [];
   settings = { ...DEFAULT_SETTINGS, ...await getSyncStorage(SETTINGS_KEY) };
   lastEpisodeNumber = getEpisodeNumber();
-  render({ applyStartPosition: true });
+  render({ applyStartPosition: true, centerActiveEpisode: true });
 }
 
 chrome.runtime.onMessage.addListener((message) => {
@@ -354,7 +357,7 @@ new MutationObserver(() => {
   const episodeChanged = current !== lastEpisodeNumber;
   if (episodeChanged || (!document.getElementById(ROOT_ID) && document.querySelector('.episode-list'))) {
     lastEpisodeNumber = current;
-    render({ applyStartPosition: episodeChanged });
+    render({ applyStartPosition: episodeChanged, centerActiveEpisode: episodeChanged });
   }
 }).observe(document.documentElement, { childList: true, subtree: true });
 
