@@ -35,3 +35,25 @@ export function getLatestIncomplete(records) {
     .filter((record) => record.state === 'in-progress')
     .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0] ?? null;
 }
+
+export function markEpisodesCompleted(records, episodes, updatedAt) {
+  const existingByNumber = new Map(records.map((record) => [record.episodeNumber, record]));
+  const selectedNumbers = new Set(episodes.map((episode) => episode.number));
+  const completed = episodes.map((episode) => {
+    const existing = existingByNumber.get(episode.number);
+    const durationSeconds = episode.durationSeconds ?? existing?.durationSeconds ?? 0;
+    return {
+      episodeKey: existing?.episodeKey ?? `episode-${episode.number}`,
+      episodeNumber: episode.number,
+      state: 'completed',
+      positionSeconds: durationSeconds,
+      durationSeconds,
+      updatedAt
+    };
+  });
+
+  return [
+    ...records.filter((record) => !selectedNumbers.has(record.episodeNumber)),
+    ...completed
+  ];
+}

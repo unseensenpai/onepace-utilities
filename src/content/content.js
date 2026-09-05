@@ -20,9 +20,9 @@ let lastPositionSave = 0;
 let autoAdvanceTimer = null;
 
 const TRANSLATIONS = {
-  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', source: 'Kaynak', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü tamamlandı yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal' },
-  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark episode complete', reset: 'Reset episode progress', language: 'Language', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel' },
-  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir el siguiente episodio automáticamente', markCompleted: 'Marcar episodio como completado', reset: 'Restablecer progreso', language: 'Idioma', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar' }
+  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', source: 'Kaynak', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü tamamlandı yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal' },
+  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark episode complete', markArcCompleted: 'Mark whole arc complete', reset: 'Reset episode progress', language: 'Language', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel' },
+  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir el siguiente episodio automáticamente', markCompleted: 'Marcar episodio como completado', markArcCompleted: 'Marcar arco completo', reset: 'Restablecer progreso', language: 'Idioma', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar' }
 };
 
 function t(key) {
@@ -90,6 +90,28 @@ function saveProgress(positionSeconds, durationSeconds, completed = false) {
   progressRecords = index === -1
     ? [...progressRecords, record]
     : progressRecords.map((item, itemIndex) => itemIndex === index ? record : item);
+  setStorage({ [PROGRESS_KEY]: progressRecords });
+  render();
+}
+
+function markArcCompleted(arc) {
+  const episodeNumbers = new Set(arc.episodes.map((episode) => episode.number));
+  const recordsByNumber = new Map(progressRecords.map((record) => [record.episodeNumber, record]));
+  progressRecords = [
+    ...progressRecords.filter((record) => !episodeNumbers.has(record.episodeNumber)),
+    ...arc.episodes.map((episode) => {
+      const existing = recordsByNumber.get(episode.number);
+      const durationSeconds = existing?.durationSeconds ?? 0;
+      return {
+        episodeKey: existing?.episodeKey ?? `episode-${episode.number}`,
+        episodeNumber: episode.number,
+        state: 'completed',
+        positionSeconds: durationSeconds,
+        durationSeconds,
+        updatedAt: new Date().toISOString()
+      };
+    })
+  ];
   setStorage({ [PROGRESS_KEY]: progressRecords });
   render();
 }
@@ -175,13 +197,15 @@ function render() {
   if (existingArcToggle) existingArcToggle.remove();
   nativeList.style.display = 'none';
   document.documentElement.classList.add('opu-focus-mode');
+  document.querySelector('.sidebar')?.style.setProperty('display', 'none', 'important');
   const sideColumn = nativeList.closest('.col-lg-4');
   sideColumn?.classList.toggle('opu-arc-hidden', !settings.arcMasterOpen);
   document.documentElement.classList.toggle('opu-arc-master-hidden', !settings.arcMasterOpen);
   const sourceBar = document.querySelector('.players');
   const activePlayer = document.querySelector('.active-player');
   if (sourceBar && activePlayer && sourceBar.parentElement === activePlayer.parentElement) {
-    activePlayer.parentElement.insertBefore(sourceBar, activePlayer);
+    sourceBar.classList.add('opu-source-dock');
+    activePlayer.parentElement.append(sourceBar);
   }
 
   const root = document.createElement('section');
@@ -195,6 +219,7 @@ function render() {
     const active = arc.episodes.some((episode) => episode.number === currentEpisode);
     return `<details class="opu-arc" ${active ? 'open' : ''}>
       <summary><span>${arc.name}</span><small>${completed} / ${arc.episodes.length} ${t('completed')}</small></summary>
+      <button class="opu-arc-complete" data-action="complete-arc" data-arc-key="${arc.key}">✓ ${t('markArcCompleted')}</button>
       <div class="opu-grid">${arc.episodes.map((episode) => {
         const state = progressState(episode.number);
         const record = getRecord(episode.number);
@@ -265,6 +290,10 @@ function render() {
     setStorage({ [PROGRESS_KEY]: progressRecords });
     render();
   });
+  root.querySelectorAll('[data-action="complete-arc"]').forEach((button) => button.addEventListener('click', () => {
+    const arc = arcs.find((item) => item.key === button.dataset.arcKey);
+    if (arc) markArcCompleted(arc);
+  }));
 
   window.__onepaceUtilitiesArcs = arcs;
   applyPlayerPreferences();
