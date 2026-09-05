@@ -1,4 +1,5 @@
 const ROOT_ID = 'onepace-utilities-root';
+const SETTINGS_DRAWER_ID = 'onepace-utilities-settings';
 const PROGRESS_KEY = 'onepaceProgress';
 const SETTINGS_KEY = 'onepaceSettings';
 const DEFAULT_SETTINGS = {
@@ -143,9 +144,12 @@ function render() {
     .filter(Boolean);
   const existing = document.getElementById(ROOT_ID);
   const existingRail = document.getElementById('onepace-utilities-context');
+  const existingDrawer = document.getElementById(SETTINGS_DRAWER_ID);
   if (existing) existing.remove();
   if (existingRail) existingRail.remove();
+  if (existingDrawer) existingDrawer.remove();
   nativeList.style.display = 'none';
+  document.documentElement.classList.add('opu-focus-mode');
 
   const root = document.createElement('section');
   root.id = ROOT_ID;
@@ -174,8 +178,14 @@ function render() {
     <button class="opu-settings-toggle" aria-label="Oynatıcı ayarları">⚙</button>
   </header>
   ${latest ? `<a class="opu-resume" href="/bolum/${latest.episodeNumber}">▶ Kaldığın yere dön</a>` : ''}
-  <div class="opu-arcs">${arcMarkup || '<p class="opu-empty">Bölüm listesi yükleniyor…</p>'}</div>
-  <aside class="opu-settings" hidden>
+  <div class="opu-arcs">${arcMarkup || '<p class="opu-empty">Bölüm listesi yükleniyor…</p>'}</div>`;
+  nativeList.parentElement.insertBefore(root, nativeList);
+
+  const drawer = document.createElement('aside');
+  drawer.id = SETTINGS_DRAWER_ID;
+  drawer.className = 'opu-settings';
+  drawer.hidden = true;
+  drawer.innerHTML = `
     <label><input type="checkbox" data-setting="useResume" ${settings.useResume ? 'checked' : ''}> Kaldığın yerden devam et</label>
     <label>Yeni bölüm başlangıcı <input type="number" min="0" data-setting="customStartSeconds" value="${settings.customStartSeconds}"> sn</label>
     <label>Hız <select data-setting="playbackRate">${[1, 1.25, 1.5, 2].map((rate) => `<option value="${rate}" ${settings.playbackRate === rate ? 'selected' : ''}>${rate}×</option>`).join('')}</select></label>
@@ -183,31 +193,20 @@ function render() {
     <label><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> Sonraki bölüme otomatik geç</label>
     <button data-action="complete">Bu bölümü tamamlandı yap</button>
     <button data-action="reset">Bu bölümün ilerlemesini sıfırla</button>
-  </aside>`;
-  nativeList.parentElement.insertBefore(root, nativeList);
-
-  const rail = document.createElement('aside');
-  rail.id = 'onepace-utilities-context';
-  rail.className = 'opu-context-rail';
-  rail.innerHTML = `<strong>ŞU AN</strong>
-    <span>${currentArc?.name || 'Arc yükleniyor'}</span>
-    <b>${currentEpisode}. Bölüm</b>
-    <small>${currentCard?.name || ''}</small>
-    <small>${getRecord(currentEpisode)?.state === 'in-progress' ? `Kaldığın yer: ${formatTime(getRecord(currentEpisode).positionSeconds)}` : 'Detay için üzerine gel'}</small>`;
-  document.body.append(rail);
+  `;
+  document.body.append(drawer);
 
   root.querySelector('.opu-settings-toggle').addEventListener('click', () => {
-    const drawer = root.querySelector('.opu-settings');
     drawer.hidden = !drawer.hidden;
   });
-  root.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
+  drawer.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
     const key = control.dataset.setting;
     settings[key] = control.type === 'checkbox' ? control.checked : key === 'preferredSource' ? control.value : Number(control.value);
     await setSyncStorage({ [SETTINGS_KEY]: settings });
     applyPlayerPreferences();
   }));
-  root.querySelector('[data-action="complete"]').addEventListener('click', () => saveProgress(0, getRecord(currentEpisode)?.durationSeconds || 0, true));
-  root.querySelector('[data-action="reset"]').addEventListener('click', () => {
+  drawer.querySelector('[data-action="complete"]').addEventListener('click', () => saveProgress(0, getRecord(currentEpisode)?.durationSeconds || 0, true));
+  drawer.querySelector('[data-action="reset"]').addEventListener('click', () => {
     progressRecords = progressRecords.filter((record) => record.episodeNumber !== currentEpisode);
     setStorage({ [PROGRESS_KEY]: progressRecords });
     render();
