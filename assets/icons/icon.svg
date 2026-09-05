@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="OnePace Utilities">
+  <circle cx="64" cy="64" r="60" fill="#171d27"/>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="#43a9e8" stroke-width="8"/>
+  <path d="M29 75c3-24 17-38 35-38s32 14 35 38H29Z" fill="#f5c518" stroke="#f8e08a" stroke-width="3"/>
+  <path d="M31 72h66v13H31z" rx="6" fill="#e84b52"/>
+  <path d="M29 85c9 12 20 18 35 18s27-6 35-18H29Z" fill="#f5c518"/>
+  <circle cx="51" cy="72" r="5" fill="#171d27"/>
+  <circle cx="77" cy="72" r="5" fill="#171d27"/>
+  <path d="M52 89c8 5 16 5 24 0" fill="none" stroke="#171d27" stroke-linecap="round" stroke-width="4"/>
+</svg>
