@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "OnePace Utilities",
+  "version": "0.1.0",
+  "description": "Arc Master, izleme ilerlemesi ve oynatıcı ayarları için OnePaceTR yardımcı eklentisi.",
+  "permissions": ["storage", "webNavigation"],
+  "host_permissions": [
+    "https://www.onepacetr.net/*",
+    "*://*.abyssplayer.com/*",
+    "*://*.sibnet.ru/*",
+    "https://drive.google.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.onepacetr.net/*"],
+      "js": ["src/content/content.js"],
+      "css": ["src/content/styles.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.abyssplayer.com/*", "*://*.sibnet.ru/*", "https://drive.google.com/*"],
+      "js": ["src/content/player-frame.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ]
+}
