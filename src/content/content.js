@@ -258,8 +258,12 @@ function render() {
   const episodeControls = document.querySelector('.episode-btns');
   const searchInput = document.querySelector('input[placeholder*="Sezon Ara"]');
   const searchControls = searchInput?.closest('[class*="search"]') ?? searchInput?.parentElement;
+  const nativeMarkControl = [...document.querySelectorAll('button, a')].find(
+    (element) => /^bölümü işaretle!?$/i.test(element.textContent.trim())
+  );
   episodeControls?.style.setProperty('display', 'none', 'important');
   searchControls?.parentElement?.style.setProperty('display', 'none', 'important');
+  nativeMarkControl?.parentElement?.style.setProperty('display', 'none', 'important');
 
   const drawer = document.createElement('aside');
   drawer.id = SETTINGS_DRAWER_ID;
