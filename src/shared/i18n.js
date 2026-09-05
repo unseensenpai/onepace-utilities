@@ -2,7 +2,7 @@ const translations = {
   tr: {
     arcMaster: 'ARC MASTER',
     settings: 'Ayarlar',
-    markCompleted: 'Bölümü tamamlandı yap'
+    markCompleted: 'Bu bölümü okundu yap'
   },
   en: {
     arcMaster: 'ARC MASTER',

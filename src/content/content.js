@@ -8,7 +8,6 @@ const DEFAULT_SETTINGS = {
   playbackRate: 1,
   customStartSeconds: 0,
   useResume: true,
-  preferredSource: 'automatic',
   language: 'tr',
   arcMasterOpen: true
 };
@@ -20,7 +19,7 @@ let lastPositionSave = 0;
 let autoAdvanceTimer = null;
 
 const TRANSLATIONS = {
-  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', source: 'Kaynak', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü tamamlandı yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal' },
+  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü okundu yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal' },
   en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark episode complete', markArcCompleted: 'Mark whole arc complete', reset: 'Reset episode progress', language: 'Language', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel' },
   es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir el siguiente episodio automáticamente', markCompleted: 'Marcar episodio como completado', markArcCompleted: 'Marcar arco completo', reset: 'Restablecer progreso', language: 'Idioma', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar' }
 };
@@ -128,18 +127,14 @@ function getResumeStart() {
   return settings.customStartSeconds;
 }
 
-function applyPlayerPreferences() {
+function applyPlayerPreferences({ applyStartPosition = false } = {}) {
   if (typeof chrome?.runtime?.sendMessage !== 'function') return;
+  const payload = { playbackRate: settings.playbackRate };
+  if (applyStartPosition) payload.startAtSeconds = getResumeStart();
   chrome.runtime.sendMessage({
     type: 'ONEPACE_APPLY_PLAYER_PREFERENCES',
-    payload: { playbackRate: settings.playbackRate, startAtSeconds: getResumeStart() }
+    payload
   });
-  if (settings.preferredSource !== 'automatic') {
-    const source = [...document.querySelectorAll('.players .player a')].find(
-      (anchor) => anchor.textContent.trim().toLowerCase() === settings.preferredSource
-    );
-    source?.click();
-  }
 }
 
 function getAdjacentEpisodes(arcs) {
@@ -183,16 +178,13 @@ function beginAutoAdvance(next) {
   }, 5000);
 }
 
-function render() {
+function render({ applyStartPosition = false } = {}) {
   const nativeList = document.querySelector('.episode-list');
   if (!nativeList) return;
   const arcs = parseGroups();
   const currentEpisode = getEpisodeNumber();
   const currentArc = arcs.find((arc) => arc.episodes.some((episode) => episode.number === currentEpisode));
   const currentCard = currentArc?.episodes.find((episode) => episode.number === currentEpisode);
-  const sourceOptions = [...document.querySelectorAll('.players .player a')]
-    .map((anchor) => anchor.textContent.trim().toLowerCase())
-    .filter(Boolean);
   const existing = document.getElementById(ROOT_ID);
   const existingRail = document.getElementById('onepace-utilities-context');
   const existingDrawer = document.getElementById(SETTINGS_DRAWER_ID);
@@ -228,7 +220,7 @@ function render() {
       <summary><span>${arc.name}</span><small>${completed} / ${arc.episodes.length} ${t('completed')}</small></summary>
       <div class="opu-arc-actions">
         <button class="opu-arc-complete" data-action="complete-arc" data-arc-key="${arc.key}">✓ ${t('markArcCompleted')}</button>
-        ${active ? `<button class="opu-arc-reset" data-action="reset-current">↺ ${t('reset')}</button>` : ''}
+        ${active ? `<button class="opu-arc-mark-current" data-action="complete-current">✓ ${t('markCompleted')}</button><button class="opu-arc-reset" data-action="reset-current">↺ ${t('reset')}</button><label class="opu-auto-advance"><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> ${t('autoAdvance')}</label>` : ''}
       </div>
       <div class="opu-grid">${arc.episodes.map((episode) => {
         const state = progressState(episode.number);
@@ -275,10 +267,6 @@ function render() {
     <label><input type="checkbox" data-setting="useResume" ${settings.useResume ? 'checked' : ''}> ${t('resumePosition')}</label>
     <label>${t('newStart')} <input type="number" min="0" data-setting="customStartSeconds" value="${settings.customStartSeconds}"> sn</label>
     <label>${t('speed')} <select data-setting="playbackRate">${[1, 1.25, 1.5, 2].map((rate) => `<option value="${rate}" ${settings.playbackRate === rate ? 'selected' : ''}>${rate}×</option>`).join('')}</select></label>
-    <label>${t('source')} <select data-setting="preferredSource"><option value="automatic">Otomatik</option>${sourceOptions.map((source) => `<option value="${source}" ${settings.preferredSource === source ? 'selected' : ''}>${source}</option>`).join('')}</select></label>
-    <label><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> ${t('autoAdvance')}</label>
-    <button data-action="complete">${t('markCompleted')}</button>
-    <button data-action="reset">${t('reset')}</button>
   `;
   document.body.append(drawer);
 
@@ -293,17 +281,11 @@ function render() {
   drawer.querySelector('[data-action="close-settings"]').addEventListener('click', () => { drawer.hidden = true; });
   drawer.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
     const key = control.dataset.setting;
-    settings[key] = control.type === 'checkbox' ? control.checked : key === 'preferredSource' ? control.value : Number(control.value);
+    settings[key] = control.type === 'checkbox' ? control.checked : Number(control.value);
     await setSyncStorage({ [SETTINGS_KEY]: settings });
-    applyPlayerPreferences();
+    if (key === 'playbackRate') applyPlayerPreferences();
     if (key === 'language') render();
   }));
-  drawer.querySelector('[data-action="complete"]').addEventListener('click', () => saveProgress(0, getRecord(currentEpisode)?.durationSeconds || 0, true));
-  drawer.querySelector('[data-action="reset"]').addEventListener('click', () => {
-    progressRecords = progressRecords.filter((record) => record.episodeNumber !== currentEpisode);
-    setStorage({ [PROGRESS_KEY]: progressRecords });
-    render();
-  });
   root.querySelectorAll('[data-action="complete-arc"]').forEach((button) => button.addEventListener('click', () => {
     const arc = arcs.find((item) => item.key === button.dataset.arcKey);
     if (arc) markArcCompleted(arc);
@@ -313,9 +295,16 @@ function render() {
     setStorage({ [PROGRESS_KEY]: progressRecords });
     render();
   });
+  root.querySelector('[data-action="complete-current"]')?.addEventListener('click', () => {
+    saveProgress(0, getRecord(currentEpisode)?.durationSeconds || 0, true);
+  });
+  root.querySelector('[data-setting="autoAdvance"]')?.addEventListener('change', async (event) => {
+    settings.autoAdvance = event.currentTarget.checked;
+    await setSyncStorage({ [SETTINGS_KEY]: settings });
+  });
 
   window.__onepaceUtilitiesArcs = arcs;
-  applyPlayerPreferences();
+  applyPlayerPreferences({ applyStartPosition });
   requestAnimationFrame(() => {
     const arcScroller = root.querySelector('.opu-arcs');
     const activeCard = root.querySelector('.opu-episode.active');
@@ -341,7 +330,7 @@ async function initialize() {
   progressRecords = await getStorage(PROGRESS_KEY) || [];
   settings = { ...DEFAULT_SETTINGS, ...await getSyncStorage(SETTINGS_KEY) };
   lastEpisodeNumber = getEpisodeNumber();
-  render();
+  render({ applyStartPosition: true });
 }
 
 chrome.runtime.onMessage.addListener((message) => {
@@ -362,14 +351,11 @@ chrome.runtime.onMessage.addListener((message) => {
 
 new MutationObserver(() => {
   const current = getEpisodeNumber();
-  if (current !== lastEpisodeNumber || (!document.getElementById(ROOT_ID) && document.querySelector('.episode-list'))) {
+  const episodeChanged = current !== lastEpisodeNumber;
+  if (episodeChanged || (!document.getElementById(ROOT_ID) && document.querySelector('.episode-list'))) {
     lastEpisodeNumber = current;
-    render();
+    render({ applyStartPosition: episodeChanged });
   }
 }).observe(document.documentElement, { childList: true, subtree: true });
-
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) applyPlayerPreferences();
-});
 
 initialize();

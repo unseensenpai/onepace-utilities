@@ -9,5 +9,5 @@ test('returns Spanish extension labels when Spanish is selected', () => {
 });
 
 test('falls back to Turkish for an unsupported language', () => {
-  assert.equal(translate('unsupported', 'markCompleted'), 'Bölümü tamamlandı yap');
+  assert.equal(translate('unsupported', 'markCompleted'), 'Bu bölümü okundu yap');
 });
