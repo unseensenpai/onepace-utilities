@@ -1,5 +1,6 @@
 const ROOT_ID = 'onepace-utilities-root';
 const SETTINGS_DRAWER_ID = 'onepace-utilities-settings';
+const CONTROL_DOCK_ID = 'onepace-utilities-control-dock';
 const PROGRESS_KEY = 'onepaceProgress';
 const SETTINGS_KEY = 'onepaceSettings';
 const DEFAULT_SETTINGS = {
@@ -197,6 +198,19 @@ function render() {
   ${latest ? `<a class="opu-resume" href="/bolum/${latest.episodeNumber}">▶ ${t('resume')}</a>` : ''}
   <div class="opu-arcs">${arcMarkup || `<p class="opu-empty">${t('loading')}</p>`}</div>`;
   nativeList.parentElement.insertBefore(root, nativeList);
+
+  let controlDock = document.getElementById(CONTROL_DOCK_ID);
+  if (!controlDock) {
+    controlDock = document.createElement('div');
+    controlDock.id = CONTROL_DOCK_ID;
+    controlDock.className = 'opu-control-dock';
+  }
+  sideColumn?.insertBefore(controlDock, root);
+  const episodeControls = document.querySelector('.episode-btns');
+  const searchInput = document.querySelector('input[placeholder*="Sezon Ara"]');
+  const searchControls = searchInput?.closest('[class*="search"]') ?? searchInput?.parentElement;
+  if (searchControls && !controlDock.contains(searchControls)) controlDock.append(searchControls);
+  if (episodeControls && !controlDock.contains(episodeControls)) controlDock.append(episodeControls);
 
   const drawer = document.createElement('aside');
   drawer.id = SETTINGS_DRAWER_ID;
