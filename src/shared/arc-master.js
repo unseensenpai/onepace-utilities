@@ -31,3 +31,9 @@ export function buildArcMaster(episodes) {
       episodes: arc.episodes.sort((left, right) => left.number - right.number)
     }));
 }
+
+export function getArcProgressState({ completed, total, isCurrent }) {
+  if (total > 0 && completed === total) return 'completed';
+  if (isCurrent) return 'active';
+  return 'untouched';
+}

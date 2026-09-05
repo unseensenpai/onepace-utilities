@@ -75,6 +75,12 @@ function progressState(episodeNumber) {
   return record.state;
 }
 
+function getArcProgressState({ completed, total, isCurrent }) {
+  if (total > 0 && completed === total) return 'completed';
+  if (isCurrent) return 'active';
+  return 'untouched';
+}
+
 function saveProgress(positionSeconds, durationSeconds, completed = false) {
   const episodeNumber = getEpisodeNumber();
   if (!episodeNumber) return;
@@ -217,9 +223,13 @@ function render() {
   const arcMarkup = arcs.map((arc) => {
     const completed = arc.episodes.filter((episode) => progressState(episode.number) === 'completed').length;
     const active = arc.episodes.some((episode) => episode.number === currentEpisode);
-    return `<details class="opu-arc" ${active ? 'open' : ''}>
+    const visualState = getArcProgressState({ completed, total: arc.episodes.length, isCurrent: active });
+    return `<details class="opu-arc opu-arc-${visualState}" ${active ? 'open' : ''}>
       <summary><span>${arc.name}</span><small>${completed} / ${arc.episodes.length} ${t('completed')}</small></summary>
-      <button class="opu-arc-complete" data-action="complete-arc" data-arc-key="${arc.key}">✓ ${t('markArcCompleted')}</button>
+      <div class="opu-arc-actions">
+        <button class="opu-arc-complete" data-action="complete-arc" data-arc-key="${arc.key}">✓ ${t('markArcCompleted')}</button>
+        ${active ? `<button class="opu-arc-reset" data-action="reset-current">↺ ${t('reset')}</button>` : ''}
+      </div>
       <div class="opu-grid">${arc.episodes.map((episode) => {
         const state = progressState(episode.number);
         const record = getRecord(episode.number);
@@ -294,6 +304,11 @@ function render() {
     const arc = arcs.find((item) => item.key === button.dataset.arcKey);
     if (arc) markArcCompleted(arc);
   }));
+  root.querySelector('[data-action="reset-current"]')?.addEventListener('click', () => {
+    progressRecords = progressRecords.filter((record) => record.episodeNumber !== currentEpisode);
+    setStorage({ [PROGRESS_KEY]: progressRecords });
+    render();
+  });
 
   window.__onepaceUtilitiesArcs = arcs;
   applyPlayerPreferences();

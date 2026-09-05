@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildArcMaster } from '../src/shared/arc-master.js';
+import { buildArcMaster, getArcProgressState } from '../src/shared/arc-master.js';
 
 test('groups OnePaceTR episodes by season and sorts their cards by number', () => {
   const arcs = buildArcMaster([
@@ -36,4 +36,10 @@ test('groups OnePaceTR episodes by season and sorts their cards by number', () =
       ]
     }
   ]);
+});
+
+test('classifies an arc as completed, active, or untouched from its progress counts', () => {
+  assert.equal(getArcProgressState({ completed: 8, total: 8, isCurrent: false }), 'completed');
+  assert.equal(getArcProgressState({ completed: 0, total: 20, isCurrent: true }), 'active');
+  assert.equal(getArcProgressState({ completed: 0, total: 20, isCurrent: false }), 'untouched');
 });
