@@ -101,6 +101,7 @@ function getResumeStart() {
 }
 
 function applyPlayerPreferences() {
+  if (typeof chrome?.runtime?.sendMessage !== 'function') return;
   chrome.runtime.sendMessage({
     type: 'ONEPACE_APPLY_PLAYER_PREFERENCES',
     payload: { playbackRate: settings.playbackRate, startAtSeconds: getResumeStart() }
@@ -111,6 +112,15 @@ function applyPlayerPreferences() {
     );
     source?.click();
   }
+}
+
+function getAdjacentEpisodes(arcs) {
+  const episodes = arcs.flatMap((arc) => arc.episodes);
+  const currentIndex = episodes.findIndex((episode) => episode.number === getEpisodeNumber());
+  return {
+    previous: episodes[currentIndex - 1] ?? null,
+    next: episodes[currentIndex + 1] ?? null
+  };
 }
 
 function nextEpisode(arcs) {
@@ -168,6 +178,11 @@ function render() {
   const sideColumn = nativeList.closest('.col-lg-4');
   sideColumn?.classList.toggle('opu-arc-hidden', !settings.arcMasterOpen);
   document.documentElement.classList.toggle('opu-arc-master-hidden', !settings.arcMasterOpen);
+  const sourceBar = document.querySelector('.players');
+  const activePlayer = document.querySelector('.active-player');
+  if (sourceBar && activePlayer && sourceBar.parentElement === activePlayer.parentElement) {
+    activePlayer.parentElement.insertBefore(sourceBar, activePlayer);
+  }
 
   const root = document.createElement('section');
   root.id = ROOT_ID;
@@ -190,27 +205,26 @@ function render() {
       }).join('')}</div>
     </details>`;
   }).join('');
+  const adjacent = getAdjacentEpisodes(arcs);
 
   root.innerHTML = `<header class="opu-header">
     <div><strong>${t('arcMaster')}</strong><span>${latest ? `${t('resumeAt')}: ${latest.episodeNumber}. Bölüm · ${formatTime(latest.positionSeconds)}` : t('history')}</span></div>
     <span><button class="opu-collapse" aria-label="${t('closeArc')}">×</button><button class="opu-settings-toggle" aria-label="${t('settings')}">⚙</button></span>
   </header>
+  <nav class="opu-episode-nav">
+    ${adjacent.previous ? `<a href="/bolum/${adjacent.previous.number}">← ${adjacent.previous.number}</a>` : '<span></span>'}
+    ${adjacent.next ? `<a href="/bolum/${adjacent.next.number}">${adjacent.next.number} →</a>` : '<span></span>'}
+  </nav>
   ${latest ? `<a class="opu-resume" href="/bolum/${latest.episodeNumber}">▶ ${t('resume')}</a>` : ''}
   <div class="opu-arcs">${arcMarkup || `<p class="opu-empty">${t('loading')}</p>`}</div>`;
   nativeList.parentElement.insertBefore(root, nativeList);
 
-  let controlDock = document.getElementById(CONTROL_DOCK_ID);
-  if (!controlDock) {
-    controlDock = document.createElement('div');
-    controlDock.id = CONTROL_DOCK_ID;
-    controlDock.className = 'opu-control-dock';
-  }
-  sideColumn?.insertBefore(controlDock, root);
+  document.getElementById(CONTROL_DOCK_ID)?.remove();
   const episodeControls = document.querySelector('.episode-btns');
   const searchInput = document.querySelector('input[placeholder*="Sezon Ara"]');
   const searchControls = searchInput?.closest('[class*="search"]') ?? searchInput?.parentElement;
-  if (searchControls && !controlDock.contains(searchControls)) controlDock.append(searchControls);
-  if (episodeControls && !controlDock.contains(episodeControls)) controlDock.append(episodeControls);
+  episodeControls?.style.setProperty('display', 'none', 'important');
+  searchControls?.parentElement?.style.setProperty('display', 'none', 'important');
 
   const drawer = document.createElement('aside');
   drawer.id = SETTINGS_DRAWER_ID;
@@ -254,6 +268,13 @@ function render() {
 
   window.__onepaceUtilitiesArcs = arcs;
   applyPlayerPreferences();
+  requestAnimationFrame(() => {
+    const arcScroller = root.querySelector('.opu-arcs');
+    const activeCard = root.querySelector('.opu-episode.active');
+    if (arcScroller && activeCard) {
+      arcScroller.scrollTop = activeCard.offsetTop - arcScroller.offsetTop - arcScroller.clientHeight / 2;
+    }
+  });
 
   if (!settings.arcMasterOpen) {
     const arcToggle = document.createElement('button');
