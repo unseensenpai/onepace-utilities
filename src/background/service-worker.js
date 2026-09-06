@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
   }
 
-  if (message.type === 'ONEPACE_PLAYER_EVENT') {
+  if (message.type === 'ONEPACE_PLAYER_EVENT' || message.type === 'ONEPACE_PLAYER_READY') {
     chrome.tabs.sendMessage(sender.tab.id, message, { frameId: 0 }).catch(() => undefined);
   }
 

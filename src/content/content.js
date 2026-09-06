@@ -3,6 +3,7 @@ const SETTINGS_DRAWER_ID = 'onepace-utilities-settings';
 const CONTROL_DOCK_ID = 'onepace-utilities-control-dock';
 const PROGRESS_KEY = 'onepaceProgress';
 const SETTINGS_KEY = 'onepaceSettings';
+const PANEL_SCROLL_KEY = 'onepacePanelScroll';
 const DEFAULT_SETTINGS = {
   autoAdvance: true,
   playbackRate: 1,
@@ -17,6 +18,10 @@ let progressRecords = [];
 let settings = { ...DEFAULT_SETTINGS };
 let lastPositionSave = 0;
 let autoAdvanceTimer = null;
+let panelScrollSaveTimer = null;
+let panelScrollState = null;
+let initializationComplete = false;
+let playerReady = false;
 
 const TRANSLATIONS = {
   tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü okundu yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal' },
@@ -84,6 +89,7 @@ function saveProgress(positionSeconds, durationSeconds, completed = false) {
   const episodeNumber = getEpisodeNumber();
   if (!episodeNumber) return;
   const index = progressRecords.findIndex((record) => record.episodeNumber === episodeNumber);
+  if (!completed && index !== -1 && progressRecords[index].state === 'completed') return;
   const record = {
     episodeKey: `episode-${episodeNumber}`,
     episodeNumber,
@@ -123,8 +129,9 @@ function markArcCompleted(arc) {
 
 function getResumeStart() {
   const record = getRecord(getEpisodeNumber());
-  if (settings.useResume && record?.state === 'in-progress') return record.positionSeconds;
-  return settings.customStartSeconds;
+  const minimumStart = Math.max(0, Number(settings.customStartSeconds) || 0);
+  if (!settings.useResume || record?.state !== 'in-progress') return minimumStart;
+  return Math.max(minimumStart, Math.max(0, Number(record.positionSeconds) || 0));
 }
 
 function applyPlayerPreferences({ applyStartPosition = false } = {}) {
@@ -147,10 +154,9 @@ function getAdjacentEpisodes(arcs) {
 }
 
 function nextEpisode(arcs) {
-  const currentArc = arcs.find((arc) => arc.episodes.some((episode) => episode.number === getEpisodeNumber()));
-  if (!currentArc) return null;
-  const currentIndex = currentArc.episodes.findIndex((episode) => episode.number === getEpisodeNumber());
-  return currentArc.episodes[currentIndex + 1] ?? null;
+  const episodes = arcs.flatMap((arc) => arc.episodes);
+  const currentIndex = episodes.findIndex((episode) => episode.number === getEpisodeNumber());
+  return episodes[currentIndex + 1] ?? null;
 }
 
 function beginAutoAdvance(next) {
@@ -189,7 +195,11 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   const existingRail = document.getElementById('onepace-utilities-context');
   const existingDrawer = document.getElementById(SETTINGS_DRAWER_ID);
   const existingArcToggle = document.getElementById('onepace-utilities-arc-toggle');
-  const previousArcScrollTop = existing?.querySelector('.opu-arcs')?.scrollTop ?? 0;
+  const existingScroller = existing?.querySelector('.opu-arcs');
+  const savedScrollTop = panelScrollState?.episodeNumber === currentEpisode
+    ? panelScrollState.scrollTop
+    : 0;
+  const previousArcScrollTop = existingScroller?.scrollTop ?? savedScrollTop;
   if (existing) existing.remove();
   if (existingRail) existingRail.remove();
   if (existingDrawer) existingDrawer.remove();
@@ -282,7 +292,11 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   drawer.querySelector('[data-action="close-settings"]').addEventListener('click', () => { drawer.hidden = true; });
   drawer.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
     const key = control.dataset.setting;
-    settings[key] = control.type === 'checkbox' ? control.checked : Number(control.value);
+    settings[key] = control.type === 'checkbox'
+      ? control.checked
+      : key === 'language'
+        ? control.value
+        : Number(control.value);
     await setSyncStorage({ [SETTINGS_KEY]: settings });
     if (key === 'playbackRate') applyPlayerPreferences();
     if (key === 'language') render();
@@ -309,11 +323,19 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   requestAnimationFrame(() => {
     const arcScroller = root.querySelector('.opu-arcs');
     const activeCard = root.querySelector('.opu-episode.active');
-    if (centerActiveEpisode && arcScroller && activeCard) {
+    const hasSavedScroll = panelScrollState?.episodeNumber === currentEpisode;
+    if (centerActiveEpisode && !hasSavedScroll && arcScroller && activeCard) {
       arcScroller.scrollTop = activeCard.offsetTop - arcScroller.offsetTop - arcScroller.clientHeight / 2;
     } else if (arcScroller) {
       arcScroller.scrollTop = previousArcScrollTop;
     }
+    arcScroller?.addEventListener('scroll', () => {
+      clearTimeout(panelScrollSaveTimer);
+      panelScrollSaveTimer = setTimeout(() => {
+        panelScrollState = { episodeNumber: currentEpisode, scrollTop: arcScroller.scrollTop };
+        setStorage({ [PANEL_SCROLL_KEY]: panelScrollState });
+      }, 200);
+    }, { passive: true });
   });
 
   if (!settings.arcMasterOpen) {
@@ -330,14 +352,28 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
 }
 
 async function initialize() {
-  progressRecords = await getStorage(PROGRESS_KEY) || [];
-  settings = { ...DEFAULT_SETTINGS, ...await getSyncStorage(SETTINGS_KEY) };
+  const [storedProgress, storedSettings, storedPanelScroll] = await Promise.all([
+    getStorage(PROGRESS_KEY),
+    getSyncStorage(SETTINGS_KEY),
+    getStorage(PANEL_SCROLL_KEY)
+  ]);
+  progressRecords = storedProgress || [];
+  settings = { ...DEFAULT_SETTINGS, ...storedSettings };
+  panelScrollState = storedPanelScroll || null;
   lastEpisodeNumber = getEpisodeNumber();
   render({ applyStartPosition: true, centerActiveEpisode: true });
+  initializationComplete = true;
+  if (playerReady) applyPlayerPreferences({ applyStartPosition: true });
 }
 
 chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === 'ONEPACE_PLAYER_READY') {
+    playerReady = true;
+    if (initializationComplete) applyPlayerPreferences({ applyStartPosition: true });
+    return;
+  }
   if (message.type !== 'ONEPACE_PLAYER_EVENT') return;
+  if (!initializationComplete) return;
   if (message.event === 'position') {
     const now = Date.now();
     if (now - lastPositionSave > 5000) {
@@ -360,5 +396,12 @@ new MutationObserver(() => {
     render({ applyStartPosition: episodeChanged, centerActiveEpisode: episodeChanged });
   }
 }).observe(document.documentElement, { childList: true, subtree: true });
+
+window.addEventListener('pagehide', () => {
+  const arcScroller = document.querySelector(`#${ROOT_ID} .opu-arcs`);
+  if (!arcScroller) return;
+  panelScrollState = { episodeNumber: getEpisodeNumber(), scrollTop: arcScroller.scrollTop };
+  setStorage({ [PANEL_SCROLL_KEY]: panelScrollState });
+});
 
 initialize();

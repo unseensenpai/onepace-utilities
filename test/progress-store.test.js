@@ -73,3 +73,24 @@ test('updates only the watched episode and returns the latest incomplete record'
   assert.equal(updated[1].positionSeconds, 1122);
   assert.deepEqual(getLatestIncomplete(updated), updated[1]);
 });
+
+test('keeps a manually completed episode completed when later position events arrive', () => {
+  const completed = {
+    episodeKey: 'water-seven-117',
+    episodeNumber: 117,
+    state: 'completed',
+    positionSeconds: 1848,
+    durationSeconds: 1848,
+    updatedAt: '2026-09-05T18:00:00.000Z'
+  };
+
+  const updated = upsertProgressRecord([completed], {
+    episodeKey: 'water-seven-117',
+    episodeNumber: 117,
+    positionSeconds: 600,
+    durationSeconds: 1848,
+    updatedAt: '2026-09-05T18:01:00.000Z'
+  });
+
+  assert.deepEqual(updated, [completed]);
+});

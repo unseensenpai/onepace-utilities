@@ -25,6 +25,10 @@ export function upsertProgressRecord(records, input) {
     return [...records, nextRecord];
   }
 
+  if (records[existingIndex].state === 'completed') {
+    return records;
+  }
+
   return records.map((record, index) =>
     index === existingIndex ? { ...record, ...nextRecord } : record
   );

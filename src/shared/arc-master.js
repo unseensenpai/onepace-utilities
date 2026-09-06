@@ -37,3 +37,9 @@ export function getArcProgressState({ completed, total, isCurrent }) {
   if (isCurrent) return 'active';
   return 'untouched';
 }
+
+export function getNextEpisode(arcs, currentEpisodeNumber) {
+  const episodes = arcs.flatMap((arc) => arc.episodes);
+  const currentIndex = episodes.findIndex((episode) => episode.number === currentEpisodeNumber);
+  return episodes[currentIndex + 1] ?? null;
+}
