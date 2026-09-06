@@ -22,6 +22,7 @@ let panelScrollSaveTimer = null;
 let panelScrollState = null;
 let initializationComplete = false;
 let playerReady = false;
+let sourceBar = null;
 
 const TRANSLATIONS = {
   tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü okundu yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal', watching: 'Şu an izliyorsun', episode: 'Bölüm' },
@@ -217,6 +218,7 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     ? panelScrollState.scrollTop
     : 0;
   const previousArcScrollTop = existingScroller?.scrollTop ?? savedScrollTop;
+  sourceBar = existing?.querySelector('.players.opu-source-dock') ?? sourceBar;
   if (existing) existing.remove();
   if (existingRail) existingRail.remove();
   if (existingDrawer) existingDrawer.remove();
@@ -227,13 +229,9 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   const sideColumn = nativeList.closest('.col-lg-4');
   sideColumn?.classList.toggle('opu-arc-hidden', !settings.arcMasterOpen);
   document.documentElement.classList.toggle('opu-arc-master-hidden', !settings.arcMasterOpen);
-  const sourceBar = document.querySelector('.players');
+  sourceBar = document.querySelector('.players') ?? sourceBar;
   const activePlayer = document.querySelector('.active-player');
   document.getElementById('onepace-utilities-player-context')?.remove();
-  if (sourceBar && activePlayer && sourceBar.parentElement === activePlayer.parentElement) {
-    sourceBar.classList.add('opu-source-dock');
-    activePlayer.parentElement.append(sourceBar);
-  }
   if (currentArc && currentCard && activePlayer?.parentElement) {
     const context = document.createElement('div');
     context.id = 'onepace-utilities-player-context';
@@ -286,9 +284,14 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     ${adjacent.previous ? `<a href="/bolum/${adjacent.previous.number}">← ${adjacent.previous.number}</a>` : '<span></span>'}
     ${adjacent.next ? `<a href="/bolum/${adjacent.next.number}">${adjacent.next.number} →</a>` : '<span></span>'}
   </nav>
+  <div class="opu-source-slot"></div>
   ${latest ? `<a class="opu-resume" href="/bolum/${latest.episodeNumber}">▶ ${t('resume')}</a>` : ''}
   <div class="opu-arcs">${arcMarkup || `<p class="opu-empty">${t('loading')}</p>`}</div>`;
   nativeList.parentElement.insertBefore(root, nativeList);
+  if (sourceBar) {
+    sourceBar.classList.add('opu-source-dock');
+    root.querySelector('.opu-source-slot')?.append(sourceBar);
+  }
 
   document.getElementById(CONTROL_DOCK_ID)?.remove();
   const episodeControls = document.querySelector('.episode-btns');
@@ -356,9 +359,10 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   requestAnimationFrame(() => {
     const arcScroller = root.querySelector('.opu-arcs');
     const activeCard = root.querySelector('.opu-episode.active');
+    const activeArc = root.querySelector('.opu-arc-active');
     const hasSavedScroll = panelScrollState?.episodeNumber === currentEpisode;
-    if (centerActiveEpisode && !hasSavedScroll && arcScroller && activeCard) {
-      arcScroller.scrollTop = activeCard.offsetTop - arcScroller.offsetTop - arcScroller.clientHeight / 2;
+    if (centerActiveEpisode && !hasSavedScroll && arcScroller && activeArc) {
+      arcScroller.scrollTop = Math.max(0, activeArc.offsetTop - arcScroller.offsetTop);
     } else if (arcScroller) {
       arcScroller.scrollTop = previousArcScrollTop;
     }

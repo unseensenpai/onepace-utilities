@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  resolveArcFocusTop,
   resolveArcScrollTop,
   shouldCenterActiveEpisode
 } from '../src/shared/arc-scroll.js';
@@ -23,10 +24,15 @@ test('restores the persisted panel scroll after refresh for the same episode', (
   }), 642);
 });
 
-test('uses the active card position when navigating to another episode', () => {
+test('uses the active arc heading when navigating to another episode', () => {
   assert.equal(resolveArcScrollTop({
     saved: { episodeNumber: 117, scrollTop: 642 },
     currentEpisodeNumber: 118,
-    activeCardCenter: 300
-  }), 300);
+    activeCardCenter: 300,
+    activeArcTop: 220
+  }), 220);
+});
+
+test('keeps the active arc heading at the top of the visible list', () => {
+  assert.equal(resolveArcFocusTop({ activeArcOffsetTop: 820, scrollerOffsetTop: 120 }), 700);
 });
