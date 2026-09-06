@@ -1,3 +1,5 @@
+import { formatEpisodeContext } from '../shared/episode-context.js';
+
 const ROOT_ID = 'onepace-utilities-root';
 const SETTINGS_DRAWER_ID = 'onepace-utilities-settings';
 const CONTROL_DOCK_ID = 'onepace-utilities-control-dock';
@@ -24,9 +26,9 @@ let initializationComplete = false;
 let playerReady = false;
 
 const TRANSLATIONS = {
-  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü okundu yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal' },
-  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark episode complete', markArcCompleted: 'Mark whole arc complete', reset: 'Reset episode progress', language: 'Language', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel' },
-  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir el siguiente episodio automáticamente', markCompleted: 'Marcar episodio como completado', markArcCompleted: 'Marcar arco completo', reset: 'Restablecer progreso', language: 'Idioma', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar' }
+  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü okundu yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal', watching: 'Şu an izliyorsun', episode: 'Bölüm' },
+  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark episode complete', markArcCompleted: 'Mark whole arc complete', reset: 'Reset episode progress', language: 'Language', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel', watching: 'Now watching', episode: 'Episode' },
+  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir el siguiente episodio automáticamente', markCompleted: 'Marcar episodio como completado', markArcCompleted: 'Marcar arco completo', reset: 'Restablecer progreso', language: 'Idioma', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar', watching: 'Viendo ahora', episode: 'Episodio' }
 };
 
 function t(key) {
@@ -212,9 +214,26 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   document.documentElement.classList.toggle('opu-arc-master-hidden', !settings.arcMasterOpen);
   const sourceBar = document.querySelector('.players');
   const activePlayer = document.querySelector('.active-player');
+  document.getElementById('onepace-utilities-player-context')?.remove();
   if (sourceBar && activePlayer && sourceBar.parentElement === activePlayer.parentElement) {
     sourceBar.classList.add('opu-source-dock');
     activePlayer.parentElement.append(sourceBar);
+  }
+  if (currentArc && currentCard && activePlayer?.parentElement) {
+    const context = document.createElement('div');
+    context.id = 'onepace-utilities-player-context';
+    context.className = 'opu-player-context';
+    const label = document.createElement('small');
+    label.textContent = t('watching');
+    const title = document.createElement('strong');
+    title.textContent = formatEpisodeContext({
+      arcName: currentArc.name,
+      episodeNumber: currentCard.number,
+      episodeName: currentCard.name,
+      episodeLabel: t('episode')
+    });
+    context.append(label, title);
+    activePlayer.parentElement.insertBefore(context, activePlayer);
   }
 
   const root = document.createElement('section');
@@ -238,7 +257,7 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
         const record = getRecord(episode.number);
         return `<a class="opu-episode ${state} ${episode.number === currentEpisode ? 'active' : ''}" href="/bolum/${episode.number}" title="${episode.name}">
           <strong>${state === 'completed' ? '✓ ' : state === 'in-progress' ? '◐ ' : ''}${episode.number}</strong>
-          <small>${record?.state === 'in-progress' ? formatTime(record.positionSeconds) : episode.name}</small>
+          <small>${episode.name}</small>
         </a>`;
       }).join('')}</div>
     </details>`;
