@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 
 import { hasExtensionRuntime } from '../src/shared/runtime.js';
@@ -16,4 +17,9 @@ test('returns true when runtime messaging is available', () => {
 test('guards iframe event delivery when a reloaded extension invalidates runtime messaging', async () => {
   const playerFrame = await readFile(new URL('../src/content/player-frame.js', import.meta.url), 'utf8');
   assert.match(playerFrame, /typeof chrome\?\.runtime\?\.sendMessage !== 'function'/);
+});
+
+test('loads the page content script without module syntax', async () => {
+  const contentScript = await readFile(new URL('../src/content/content.js', import.meta.url), 'utf8');
+  assert.doesNotThrow(() => new vm.Script(contentScript));
 });

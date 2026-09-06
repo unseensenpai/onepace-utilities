@@ -1,5 +1,3 @@
-import { formatEpisodeContext } from '../shared/episode-context.js';
-
 const ROOT_ID = 'onepace-utilities-root';
 const SETTINGS_DRAWER_ID = 'onepace-utilities-settings';
 const CONTROL_DOCK_ID = 'onepace-utilities-control-dock';
@@ -37,6 +35,11 @@ function t(key) {
 
 function getEpisodeNumber() {
   return Number(location.pathname.match(/\/bolum\/(\d+)/)?.[1] ?? 0);
+}
+
+function formatEpisodeContext({ arcName, episodeNumber, episodeName, episodeLabel = 'Bölüm' }) {
+  const episode = `${episodeNumber}. ${episodeLabel}: ${episodeName}`;
+  return arcName ? `${arcName} · ${episode}` : episode;
 }
 
 function getStorage(key) {
