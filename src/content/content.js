@@ -238,8 +238,6 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     const context = document.createElement('div');
     context.id = 'onepace-utilities-player-context';
     context.className = 'opu-player-context';
-    const label = document.createElement('small');
-    label.textContent = t('watching');
     const title = document.createElement('strong');
     title.textContent = formatEpisodeContext({
       arcName: currentArc.name,
@@ -247,7 +245,7 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
       episodeName: currentCard.name,
       episodeLabel: t('episode')
     });
-    context.append(label, title);
+    context.append(title);
     activePlayer.parentElement.insertBefore(context, activePlayer);
   }
 
@@ -278,10 +276,11 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     </details>`;
   }).join('');
   const adjacent = getAdjacentEpisodes(arcs);
+  const sourceReferenceMarkup = episodeInfo ? `<details class="opu-info-control"><summary aria-label="Bölüm bilgileri">ⓘ</summary><div class="opu-episode-info">${episodeInfo.manga ? `<div><strong>Manga</strong><span>${episodeInfo.manga}</span></div>` : ''}${episodeInfo.anime ? `<div><strong>Anime</strong><span>${episodeInfo.anime}</span></div>` : ''}</div></details>` : '';
 
   root.innerHTML = `<header class="opu-header">
     <div><strong>${t('arcMaster')}</strong><span>${latest ? `${t('resumeAt')}: ${latest.episodeNumber}. Bölüm · ${formatTime(latest.positionSeconds)}` : t('history')}</span></div>
-    <span><button class="opu-collapse" aria-label="${t('closeArc')}">×</button>${episodeInfo ? '<button class="opu-info-toggle" aria-label="Bölüm bilgileri" aria-expanded="false">ⓘ</button>' : ''}<button class="opu-settings-toggle" aria-label="${t('settings')}">⚙</button></span>
+    <span><button class="opu-collapse" aria-label="${t('closeArc')}">×</button>${sourceReferenceMarkup}<button class="opu-settings-toggle" aria-label="${t('settings')}">⚙</button></span>
   </header>
   <nav class="opu-episode-nav">
     ${adjacent.previous ? `<a href="/bolum/${adjacent.previous.number}">← ${adjacent.previous.number}</a>` : '<span></span>'}
@@ -318,27 +317,6 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   root.querySelector('.opu-settings-toggle').addEventListener('click', () => {
     drawer.hidden = !drawer.hidden;
   });
-  const infoButton = root.querySelector('.opu-info-toggle');
-  if (infoButton && episodeInfo) {
-    const infoPanel = document.createElement('div');
-    infoPanel.className = 'opu-episode-info';
-    infoPanel.hidden = true;
-    for (const [label, value] of [['Manga', episodeInfo.manga], ['Anime', episodeInfo.anime]]) {
-      if (!value) continue;
-      const row = document.createElement('div');
-      const name = document.createElement('strong');
-      const reference = document.createElement('span');
-      name.textContent = label;
-      reference.textContent = value;
-      row.append(name, reference);
-      infoPanel.append(row);
-    }
-    root.append(infoPanel);
-    infoButton.addEventListener('click', () => {
-      infoPanel.hidden = !infoPanel.hidden;
-      infoButton.setAttribute('aria-expanded', String(!infoPanel.hidden));
-    });
-  }
   root.querySelector('.opu-collapse').addEventListener('click', async () => {
     settings.arcMasterOpen = false;
     await setSyncStorage({ [SETTINGS_KEY]: settings });
