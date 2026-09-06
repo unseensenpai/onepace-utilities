@@ -23,3 +23,38 @@ test('loads the page content script without module syntax', async () => {
   const contentScript = await readFile(new URL('../src/content/content.js', import.meta.url), 'utf8');
   assert.doesNotThrow(() => new vm.Script(contentScript));
 });
+
+function footerInfo(label, value) {
+  return {
+    querySelectorAll() {
+      return [{ textContent: label }, { textContent: value }];
+    }
+  };
+}
+
+test('reads manga and anime references from the active episode footer', async () => {
+  const contentScript = await readFile(new URL('../src/content/content.js', import.meta.url), 'utf8');
+  const footer = [footerInfo('Manga', '322-323'), footerInfo('Anime', '228')];
+  const context = {
+    chrome: {
+      storage: {
+        local: { get(_key, callback) { callback({}); }, set(_value, callback) { callback?.(); } },
+        sync: { get(_key, callback) { callback({}); }, set(_value, callback) { callback?.(); } }
+      },
+      runtime: { onMessage: { addListener() {} }, sendMessage() {} }
+    },
+    document: {
+      documentElement: {},
+      getElementById() { return null; },
+      querySelector() { return null; },
+      querySelectorAll(selector) { return selector === '.episode-detail .infos .info' ? footer : []; }
+    },
+    location: { pathname: '/bolum/123' },
+    MutationObserver: class { observe() {} },
+    window: { addEventListener() {} }
+  };
+
+  vm.runInNewContext(`${contentScript}\nglobalThis.episodeInfo = getEpisodeInfo();`, context);
+  assert.equal(context.episodeInfo.manga, '322-323');
+  assert.equal(context.episodeInfo.anime, '228');
+});
