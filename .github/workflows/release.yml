@@ -18,7 +18,7 @@ jobs:
           node-version: 22
       - run: npm test
       - run: node --check src/content/content.js && node --check src/content/player-frame.js && node --check src/background/service-worker.js
-      - run: zip -r onepace-utilities.zip manifest.json src README.md LICENSE -x '*/.DS_Store'
+      - run: zip -r onepace-utilities.zip manifest.json src assets README.md LICENSE -x '*/.DS_Store'
       - uses: softprops/action-gh-release@v2
         with:
           files: onepace-utilities.zip
