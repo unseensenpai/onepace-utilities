@@ -25,9 +25,9 @@ let playerReady = false;
 let sourceBar = null;
 
 const TRANSLATIONS = {
-  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü okundu yap', markArcCompleted: 'Arc’ın tamamını izlendi yap', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal', watching: 'Şu an izliyorsun', episode: 'Bölüm' },
-  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark episode complete', markArcCompleted: 'Mark whole arc complete', reset: 'Reset episode progress', language: 'Language', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel', watching: 'Now watching', episode: 'Episode' },
-  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir el siguiente episodio automáticamente', markCompleted: 'Marcar episodio como completado', markArcCompleted: 'Marcar arco completo', reset: 'Restablecer progreso', language: 'Idioma', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar', watching: 'Viendo ahora', episode: 'Episodio' }
+  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü izlendi olarak işaretle', markArcCompleted: "Bu arc'taki tüm bölümleri izlendi olarak işaretle", markThroughCurrent: 'Bu bölüme kadar tümünü izlendi olarak işaretle', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', backup: 'Yedekleme', exportData: 'İlerleme ve ayarları dışa aktar', importData: 'İlerleme ve ayarları içe aktar', importPrompt: 'Yedek mevcut verilerle birleştirilecek. Devam edilsin mi?', importAdded: 'Yeni bölüm', importUpdated: 'Güncellenen bölüm', importKept: 'Korunan tamamlanmış bölüm', importInvalid: 'Atlanan geçersiz kayıt', importSuccess: 'Yedek başarıyla içe aktarıldı.', importError: 'Yedek dosyası okunamadı veya geçersiz.', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal', watching: 'Şu an izliyorsun', episode: 'Bölüm' },
+  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark this episode as watched', markArcCompleted: 'Mark every episode in this arc as watched', markThroughCurrent: 'Mark everything through this episode as watched', reset: 'Reset progress for this episode', language: 'Language', backup: 'Backup', exportData: 'Export progress and settings', importData: 'Import progress and settings', importPrompt: 'The backup will be merged with current data. Continue?', importAdded: 'New episodes', importUpdated: 'Updated episodes', importKept: 'Completed episodes preserved', importInvalid: 'Invalid records skipped', importSuccess: 'Backup imported successfully.', importError: 'The backup file could not be read or is invalid.', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel', watching: 'Now watching', episode: 'Episode' },
+  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir automáticamente el siguiente episodio', markCompleted: 'Marcar este episodio como visto', markArcCompleted: 'Marcar todos los episodios de este arco como vistos', markThroughCurrent: 'Marcar como visto todo hasta este episodio', reset: 'Restablecer el progreso de este episodio', language: 'Idioma', backup: 'Copia de seguridad', exportData: 'Exportar progreso y ajustes', importData: 'Importar progreso y ajustes', importPrompt: 'La copia se combinará con los datos actuales. ¿Continuar?', importAdded: 'Episodios nuevos', importUpdated: 'Episodios actualizados', importKept: 'Episodios completados conservados', importInvalid: 'Registros inválidos omitidos', importSuccess: 'Copia de seguridad importada correctamente.', importError: 'No se pudo leer la copia de seguridad o no es válida.', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar', watching: 'Viendo ahora', episode: 'Episodio' }
 };
 
 function t(key) {
@@ -68,6 +68,43 @@ function getSyncStorage(key) {
 
 function setSyncStorage(value) {
   return new Promise((resolve) => chrome.storage.sync.set(value, resolve));
+}
+
+function exportBackup() {
+  const backup = globalThis.OnePaceBackup.createBackup({
+    progress: progressRecords,
+    settings
+  });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `onepace-utilities-backup-${backup.exportedAt.slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function formatImportSummary(summary) {
+  return `${t('importPrompt')}\n\n${t('importAdded')}: ${summary.added}\n${t('importUpdated')}: ${summary.updated}\n${t('importKept')}: ${summary.keptCompleted}\n${t('importInvalid')}: ${summary.invalid}`;
+}
+
+async function importBackup(file) {
+  try {
+    const backup = globalThis.OnePaceBackup.parseBackup(await file.text());
+    const merged = globalThis.OnePaceBackup.mergeProgressRecords(progressRecords, backup.progress);
+    if (!confirm(formatImportSummary(merged.summary))) return;
+    const importedSettings = globalThis.OnePaceBackup.sanitizeSettings(backup.settings);
+    progressRecords = merged.records;
+    settings = { ...settings, ...importedSettings };
+    await Promise.all([
+      setStorage({ [PROGRESS_KEY]: progressRecords }),
+      setSyncStorage({ [SETTINGS_KEY]: settings })
+    ]);
+    render();
+    alert(t('importSuccess'));
+  } catch {
+    alert(t('importError'));
+  }
 }
 
 function parseGroups() {
@@ -122,12 +159,12 @@ function saveProgress(positionSeconds, durationSeconds, completed = false) {
   render();
 }
 
-function markArcCompleted(arc) {
-  const episodeNumbers = new Set(arc.episodes.map((episode) => episode.number));
+function markEpisodesCompleted(episodes) {
+  const episodeNumbers = new Set(episodes.map((episode) => episode.number));
   const recordsByNumber = new Map(progressRecords.map((record) => [record.episodeNumber, record]));
   progressRecords = [
     ...progressRecords.filter((record) => !episodeNumbers.has(record.episodeNumber)),
-    ...arc.episodes.map((episode) => {
+    ...episodes.map((episode) => {
       const existing = recordsByNumber.get(episode.number);
       const durationSeconds = existing?.durationSeconds ?? 0;
       return {
@@ -142,6 +179,17 @@ function markArcCompleted(arc) {
   ];
   setStorage({ [PROGRESS_KEY]: progressRecords });
   render();
+}
+
+function markArcCompleted(arc) {
+  markEpisodesCompleted(arc.episodes);
+}
+
+function markEpisodesThroughCurrent(arcs, currentEpisodeNumber) {
+  const episodes = arcs.flatMap((arc) => arc.episodes);
+  const currentIndex = episodes.findIndex((episode) => episode.number === currentEpisodeNumber);
+  if (currentIndex === -1) return;
+  markEpisodesCompleted(episodes.slice(0, currentIndex + 1));
 }
 
 function getResumeStart() {
@@ -199,6 +247,18 @@ function beginAutoAdvance(next) {
     clearInterval(interval);
     location.href = `/bolum/${next.number}`;
   }, 5000);
+}
+
+function focusActiveEpisodeRow({ arcScroller, activeArc, activeCard, gap = 8 }) {
+  const scrollerTop = arcScroller.getBoundingClientRect().top;
+  const activeCardTop = activeCard.getBoundingClientRect().top;
+  const stickyHeaderHeight = activeArc.querySelector(':scope > summary')?.getBoundingClientRect().height ?? 0;
+  const stickyActionsHeight = activeArc.querySelector(':scope > .opu-arc-actions')?.getBoundingClientRect().height ?? 0;
+  activeArc.style?.setProperty('--opu-arc-summary-height', `${stickyHeaderHeight}px`);
+  arcScroller.scrollTop = Math.max(
+    0,
+    arcScroller.scrollTop + activeCardTop - scrollerTop - stickyHeaderHeight - stickyActionsHeight - gap
+  );
 }
 
 function render({ applyStartPosition = false, centerActiveEpisode = false } = {}) {
@@ -261,7 +321,7 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
       <summary><span>${arc.name}</span><small>${completed} / ${arc.episodes.length} ${t('completed')}</small></summary>
       <div class="opu-arc-actions">
         <button class="opu-arc-complete" data-action="complete-arc" data-arc-key="${arc.key}">✓ ${t('markArcCompleted')}</button>
-        ${active ? `<button class="opu-arc-mark-current" data-action="complete-current">✓ ${t('markCompleted')}</button><button class="opu-arc-reset" data-action="reset-current">↺ ${t('reset')}</button><label class="opu-auto-advance"><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> ${t('autoAdvance')}</label>` : ''}
+        ${active ? `<button class="opu-arc-mark-current" data-action="complete-current">✓ ${t('markCompleted')}</button><button class="opu-arc-mark-through" data-action="complete-through-current">✓ ${t('markThroughCurrent')}</button><button class="opu-arc-reset" data-action="reset-current">↺ ${t('reset')}</button><label class="opu-auto-advance"><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> ${t('autoAdvance')}</label>` : ''}
       </div>
       <div class="opu-grid">${arc.episodes.map((episode) => {
         const state = progressState(episode.number);
@@ -314,6 +374,7 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     <label><input type="checkbox" data-setting="useResume" ${settings.useResume ? 'checked' : ''}> ${t('resumePosition')}</label>
     <label>${t('newStart')} <input type="number" min="0" data-setting="customStartSeconds" value="${settings.customStartSeconds}"> sn</label>
     <label>${t('speed')} <select data-setting="playbackRate">${[1, 1.25, 1.5, 2].map((rate) => `<option value="${rate}" ${settings.playbackRate === rate ? 'selected' : ''}>${rate}×</option>`).join('')}</select></label>
+    <section class="opu-backup"><strong>${t('backup')}</strong><div><button data-action="export-backup">${t('exportData')}</button><button data-action="import-backup">${t('importData')}</button><input type="file" accept="application/json,.json" data-input="backup" hidden></div></section>
   `;
   document.body.append(drawer);
 
@@ -326,6 +387,15 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     render();
   });
   drawer.querySelector('[data-action="close-settings"]').addEventListener('click', () => { drawer.hidden = true; });
+  drawer.querySelector('[data-action="export-backup"]').addEventListener('click', exportBackup);
+  drawer.querySelector('[data-action="import-backup"]').addEventListener('click', () => {
+    drawer.querySelector('[data-input="backup"]').click();
+  });
+  drawer.querySelector('[data-input="backup"]').addEventListener('change', async (event) => {
+    const [file] = event.currentTarget.files ?? [];
+    if (file) await importBackup(file);
+    event.currentTarget.value = '';
+  });
   drawer.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
     const key = control.dataset.setting;
     settings[key] = control.type === 'checkbox'
@@ -349,6 +419,9 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
   root.querySelector('[data-action="complete-current"]')?.addEventListener('click', () => {
     saveProgress(0, getRecord(currentEpisode)?.durationSeconds || 0, true);
   });
+  root.querySelector('[data-action="complete-through-current"]')?.addEventListener('click', () => {
+    markEpisodesThroughCurrent(arcs, currentEpisode);
+  });
   root.querySelector('[data-setting="autoAdvance"]')?.addEventListener('change', async (event) => {
     settings.autoAdvance = event.currentTarget.checked;
     await setSyncStorage({ [SETTINGS_KEY]: settings });
@@ -356,13 +429,15 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
 
   window.__onepaceUtilitiesArcs = arcs;
   applyPlayerPreferences({ applyStartPosition });
-  requestAnimationFrame(() => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
     const arcScroller = root.querySelector('.opu-arcs');
     const activeCard = root.querySelector('.opu-episode.active');
     const activeArc = root.querySelector('.opu-arc-active');
+    const stickyHeaderHeight = activeArc?.querySelector(':scope > summary')?.getBoundingClientRect().height ?? 0;
+    activeArc?.style.setProperty('--opu-arc-summary-height', `${stickyHeaderHeight}px`);
     const hasSavedScroll = panelScrollState?.episodeNumber === currentEpisode;
-    if (centerActiveEpisode && !hasSavedScroll && arcScroller && activeArc) {
-      arcScroller.scrollTop = Math.max(0, activeArc.offsetTop - arcScroller.offsetTop);
+    if (centerActiveEpisode && !hasSavedScroll && arcScroller && activeArc && activeCard) {
+      focusActiveEpisodeRow({ arcScroller, activeArc, activeCard });
     } else if (arcScroller) {
       arcScroller.scrollTop = previousArcScrollTop;
     }
@@ -373,7 +448,7 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
         setStorage({ [PANEL_SCROLL_KEY]: panelScrollState });
       }, 200);
     }, { passive: true });
-  });
+  }));
 
   if (!settings.arcMasterOpen) {
     const arcToggle = document.createElement('button');

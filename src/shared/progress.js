@@ -61,3 +61,10 @@ export function markEpisodesCompleted(records, episodes, updatedAt) {
     ...completed
   ];
 }
+
+export function markEpisodesThroughCompleted(records, arcs, currentEpisodeNumber, updatedAt) {
+  const episodes = arcs.flatMap((arc) => arc.episodes);
+  const currentIndex = episodes.findIndex((episode) => episode.number === currentEpisodeNumber);
+  if (currentIndex === -1) return records;
+  return markEpisodesCompleted(records, episodes.slice(0, currentIndex + 1), updatedAt);
+}

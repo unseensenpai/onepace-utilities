@@ -9,6 +9,16 @@ export function resolveArcScrollTop({ saved, currentEpisodeNumber, activeCardCen
   return activeArcTop ?? activeCardCenter;
 }
 
-export function resolveArcFocusTop({ activeArcOffsetTop, scrollerOffsetTop }) {
-  return Math.max(0, activeArcOffsetTop - scrollerOffsetTop);
+export function resolveArcFocusTop({
+  currentScrollTop,
+  activeCardTop,
+  scrollerTop,
+  stickyHeaderHeight,
+  stickyActionsHeight = 0,
+  gap = 0
+}) {
+  return Math.max(
+    0,
+    currentScrollTop + activeCardTop - scrollerTop - stickyHeaderHeight - stickyActionsHeight - gap
+  );
 }

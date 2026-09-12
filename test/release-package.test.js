@@ -17,3 +17,12 @@ test('release package includes every top-level path required by the manifest', a
     assert.ok(packagedPaths.has(requiredPath), `release package is missing ${requiredPath}`);
   }
 });
+
+test('loads the backup API before the OnePace page content script', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../manifest.json', import.meta.url), 'utf8'));
+  const pageScripts = manifest.content_scripts.find((entry) =>
+    entry.matches.includes('https://www.onepacetr.net/*')
+  ).js;
+
+  assert.deepEqual(pageScripts, ['src/shared/backup.js', 'src/content/content.js']);
+});

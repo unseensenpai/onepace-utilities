@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "OnePace Utilities",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Arc Master, izleme ilerlemesi ve oynatıcı ayarları için OnePaceTR yardımcı eklentisi.",
   "icons": {
     "16": "assets/icons/icon-16.png",
@@ -31,7 +31,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.onepacetr.net/*"],
-      "js": ["src/content/content.js"],
+      "js": ["src/shared/backup.js", "src/content/content.js"],
       "css": ["src/content/styles.css"],
       "run_at": "document_idle"
     },

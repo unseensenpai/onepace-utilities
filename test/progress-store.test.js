@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import {
+import * as progressApi from '../src/shared/progress.js';
+
+const {
   createProgressRecord,
   getLatestIncomplete,
   markEpisodesCompleted,
   upsertProgressRecord
-} from '../src/shared/progress.js';
+} = progressApi;
 
 test('creates an in-progress record with the latest saved episode position', () => {
   const record = createProgressRecord({
@@ -93,4 +95,18 @@ test('keeps a manually completed episode completed when later position events ar
   });
 
   assert.deepEqual(updated, [completed]);
+});
+
+test('marks every episode through the current episode watched without changing later episodes', () => {
+  assert.equal(typeof progressApi.markEpisodesThroughCompleted, 'function');
+  const arcs = [
+    { episodes: [{ number: 1 }, { number: 2 }] },
+    { episodes: [{ number: 3 }, { number: 4 }] }
+  ];
+  const updated = progressApi.markEpisodesThroughCompleted([
+    { episodeNumber: 4, episodeKey: 'episode-4', state: 'in-progress', positionSeconds: 20, durationSeconds: 100, updatedAt: 'old' }
+  ], arcs, 3, '2026-09-12T14:00:00.000Z');
+
+  assert.deepEqual(updated.filter((record) => record.state === 'completed').map((record) => record.episodeNumber).sort(), [1, 2, 3]);
+  assert.equal(updated.find((record) => record.episodeNumber === 4).state, 'in-progress');
 });

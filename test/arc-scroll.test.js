@@ -33,6 +33,13 @@ test('uses the active arc heading when navigating to another episode', () => {
   }), 220);
 });
 
-test('keeps the active arc heading at the top of the visible list', () => {
-  assert.equal(resolveArcFocusTop({ activeArcOffsetTop: 820, scrollerOffsetTop: 120 }), 700);
+test('places the active episode row immediately below the sticky arc heading', () => {
+  assert.equal(resolveArcFocusTop({
+    currentScrollTop: 480,
+    activeCardTop: 220,
+    scrollerTop: 80,
+    stickyHeaderHeight: 34,
+    stickyActionsHeight: 96,
+    gap: 8
+  }), 482);
 });

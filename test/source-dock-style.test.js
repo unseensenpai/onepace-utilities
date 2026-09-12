@@ -36,3 +36,21 @@ test('uses a proportional width for the Arc Master panel', async () => {
   assert.match(panelRule, /flex:0 0 22%!important/);
   assert.match(panelRule, /max-width:22%!important/);
 });
+
+test('keeps the open arc heading visible while its episode grid scrolls', async () => {
+  const stylesheet = await readFile(new URL('../src/content/styles.css', import.meta.url), 'utf8');
+  const headingRule = stylesheet.match(/\.opu-arc\[open\]>summary\{([^}]*)\}/)?.[1] ?? '';
+
+  assert.match(headingRule, /position:sticky/);
+  assert.match(headingRule, /top:0/);
+  assert.match(headingRule, /z-index:/);
+});
+
+test('keeps all active arc actions below the sticky arc heading', async () => {
+  const stylesheet = await readFile(new URL('../src/content/styles.css', import.meta.url), 'utf8');
+  const actionsRule = stylesheet.match(/\.opu-arc-active\[open\]>\.opu-arc-actions\{([^}]*)\}/)?.[1] ?? '';
+
+  assert.match(actionsRule, /position:sticky/);
+  assert.match(actionsRule, /top:var\(--opu-arc-summary-height/);
+  assert.match(actionsRule, /z-index:/);
+});

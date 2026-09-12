@@ -24,6 +24,32 @@ test('loads the page content script without module syntax', async () => {
   assert.doesNotThrow(() => new vm.Script(contentScript));
 });
 
+test('content script scrolls the active episode row below its sticky arc heading', async () => {
+  const contentScript = await readFile(new URL('../src/content/content.js', import.meta.url), 'utf8');
+  const context = {
+    chrome: {
+      storage: {
+        local: { get(_key, callback) { callback({}); }, set(_value, callback) { callback?.(); } },
+        sync: { get(_key, callback) { callback({}); }, set(_value, callback) { callback?.(); } }
+      },
+      runtime: { onMessage: { addListener() {} }, sendMessage() {} }
+    },
+    document: {
+      documentElement: {},
+      getElementById() { return null; },
+      querySelector() { return null; },
+      querySelectorAll() { return []; }
+    },
+    location: { pathname: '/bolum/188' },
+    MutationObserver: class { observe() {} },
+    window: { addEventListener() {} }
+  };
+
+  vm.runInNewContext(`${contentScript}\nconst scroller = { scrollTop: 480, getBoundingClientRect: () => ({ top: 80 }) };\nconst activeArc = { querySelector: selector => ({ getBoundingClientRect: () => ({ height: selector.includes('summary') ? 34 : 96 }) }), style: { setProperty() {} } };\nfocusActiveEpisodeRow({ arcScroller: scroller, activeArc, activeCard: { getBoundingClientRect: () => ({ top: 220 }) } });\nglobalThis.focusedScrollTop = scroller.scrollTop;`, context);
+
+  assert.equal(context.focusedScrollTop, 482);
+});
+
 function footerInfo(label, value) {
   return {
     querySelectorAll() {

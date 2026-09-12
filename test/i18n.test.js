@@ -9,5 +9,12 @@ test('returns Spanish extension labels when Spanish is selected', () => {
 });
 
 test('falls back to Turkish for an unsupported language', () => {
-  assert.equal(translate('unsupported', 'markCompleted'), 'Bu bölümü okundu yap');
+  assert.equal(translate('unsupported', 'markCompleted'), 'Bu bölümü izlendi olarak işaretle');
+});
+
+test('uses natural viewing labels for episode and arc progress actions in every language', () => {
+  assert.equal(translate('tr', 'markThroughCurrent'), 'Bu bölüme kadar tümünü izlendi olarak işaretle');
+  assert.equal(translate('en', 'markThroughCurrent'), 'Mark everything through this episode as watched');
+  assert.equal(translate('es', 'markThroughCurrent'), 'Marcar como visto todo hasta este episodio');
+  assert.equal(translate('tr', 'markArcCompleted'), "Bu arc'taki tüm bölümleri izlendi olarak işaretle");
 });

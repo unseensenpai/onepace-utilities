@@ -19,10 +19,12 @@ OnePace Utilities is a Chromium extension that improves the viewing experience o
 - Automatic watch-progress tracking and resume support
 - Completed, in-progress, and untouched episode states
 - Mark a single episode or an entire arc as completed
+- Mark every episode through the current episode as watched
 - Reset the progress of the current episode
+- Export and safely merge progress and settings backups
 - Optional automatic playback of the next episode
 - Configurable episode start time and playback speed
-- Quick switching between available video sources
+- Quick switching between supported video sources: Clone, Sibnet, and Google Drive
 - Manga and anime source references when provided by OnePaceTR
 - Interface languages: English, Turkish, and Spanish
 
@@ -68,10 +70,12 @@ OnePace Utilities, OnePaceTR üzerindeki izleme deneyimini geliştiren Chromium 
 - Otomatik izleme ilerlemesi kaydı ve kaldığın yerden devam etme
 - Tamamlanan, devam eden ve henüz başlanmayan bölüm durumları
 - Tek bir bölümü veya bütün bir arc'ı tamamlandı olarak işaretleme
+- Geçerli bölüme kadar tüm bölümleri izlendi olarak işaretleme
 - Geçerli bölümün ilerlemesini sıfırlama
+- İlerleme ve ayar yedeklerini dışa aktarma ve güvenle birleştirerek içe aktarma
 - İsteğe bağlı otomatik sonraki bölüm oynatma
 - Ayarlanabilir bölüm başlangıç zamanı ve oynatma hızı
-- Kullanılabilir video kaynakları arasında hızlı geçiş
+- Desteklenen video kaynakları arasında hızlı geçiş: Clone, Sibnet ve Google Drive
 - OnePaceTR tarafından sunulduğunda manga ve anime kaynak bilgileri
 - Türkçe, İngilizce ve İspanyolca arayüz desteği
 
@@ -117,10 +121,12 @@ OnePace Utilities es una extensión para navegadores basados en Chromium que mej
 - Registro automático del progreso y reanudación de episodios
 - Estados para episodios completados, en curso y no iniciados
 - Opción para marcar un episodio o un arco completo como visto
+- Opción para marcar como vistos todos los episodios hasta el episodio actual
 - Restablecimiento del progreso del episodio actual
+- Exportación e importación segura de copias del progreso y los ajustes
 - Reproducción automática opcional del siguiente episodio
 - Tiempo de inicio y velocidad de reproducción configurables
-- Cambio rápido entre las fuentes de vídeo disponibles
+- Cambio rápido entre las fuentes de vídeo compatibles: Clone, Sibnet y Google Drive
 - Referencias del manga y del anime cuando OnePaceTR las proporciona
 - Interfaz disponible en español, inglés y turco
 
@@ -167,7 +173,7 @@ Pushing a Git tag in the `v*` format runs the test suite and creates a ZIP archi
 
 ## Compatibility
 
-OnePace Utilities targets Chromium-based browsers and currently integrates with OnePaceTR, AbyssPlayer, Sibnet, and Google Drive embeds.
+OnePace Utilities targets Chromium-based browsers and currently integrates with OnePaceTR's Clone (AbyssPlayer), Sibnet, and Google Drive embeds.
 
 ## Disclaimer
 
