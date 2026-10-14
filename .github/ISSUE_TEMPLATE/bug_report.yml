@@ -1,0 +1,44 @@
+name: Bug report / Hata bildirimi / Informe de error
+description: Something does not work as expected / Bir şey beklendiği gibi çalışmıyor / Algo no funciona como se esperaba
+labels: [bug]
+body:
+  - type: dropdown
+    id: site
+    attributes:
+      label: Site / Site / Sitio
+      options:
+        - OnePaceTR
+        - AnimPow
+        - TRanimeizle
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Episode URL / Bölüm adresi / URL del episodio
+      placeholder: https://www.tranimeizle.live/one-piece-1046-bolum-izle
+  - type: input
+    id: source
+    attributes:
+      label: Video source / Video kaynağı / Fuente de vídeo
+      placeholder: AitrVip, Sibnet, Google Drive
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened? / Ne oldu? / ¿Qué pasó?
+      description: Steps, what you expected and what you saw / Adımlar, beklediğin ve gördüğün / Pasos, lo que esperabas y lo que viste
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console lines / Console satırları / Líneas de la consola
+      description: Lines starting with [Arc Master], if any / Varsa [Arc Master] ile başlayan satırlar / Líneas que empiezan por [Arc Master], si las hay
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Extension version and browser / Eklenti sürümü ve tarayıcı / Versión de la extensión y navegador
+      placeholder: v0.3.0, Chrome 130
+    validations:
+      required: true

@@ -1,0 +1,18 @@
+name: Feature request / Özellik isteği / Petición de función
+description: Suggest an idea or a new site / Bir fikir veya yeni site öner / Sugiere una idea o un sitio nuevo
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like? / Ne istiyorsun? / ¿Qué te gustaría?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it useful? / Neden faydalı? / ¿Por qué es útil?
+  - type: input
+    id: site
+    attributes:
+      label: Site, if it is about one / İlgiliyse site / Sitio, si aplica
