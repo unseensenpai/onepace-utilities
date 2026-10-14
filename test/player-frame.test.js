@@ -13,7 +13,14 @@ async function runPlayerFrame({ ranges = [], hostname = 'video.sibnet.ru', menuB
     currentTime: 10,
     duration: 1845,
     playbackRate: 1,
+    paused: true,
+    playCalls: 0,
     dataset: {},
+    play() {
+      this.playCalls += 1;
+      this.paused = false;
+      return Promise.resolve();
+    },
     addEventListener(type, listener) {
       videoListeners.set(type, listener);
     }
@@ -261,4 +268,29 @@ test('stops Google Drive polling when its timeline is removed', async () => {
   drive.mutationCallback();
 
   assert.equal(drive.getIntervalCallback(), null);
+});
+
+test('seeks the native video when the page sends a seek command', async () => {
+  const { runtimeListener, video } = await runPlayerFrame();
+  runtimeListener({ type: 'ONEPACE_PLAYER_PREFERENCES', payload: { playbackRate: 1 } });
+  video.currentTime = 100;
+  runtimeListener({ type: 'ONEPACE_PLAYER_COMMAND', command: 'seek', seconds: 15 });
+  assert.equal(video.currentTime, 115);
+  runtimeListener({ type: 'ONEPACE_PLAYER_COMMAND', command: 'seek', seconds: -200 });
+  assert.equal(video.currentTime, 0);
+});
+
+test('starts playback once when the page asks for autoplay', async () => {
+  const { runtimeListener, video } = await runPlayerFrame();
+  runtimeListener({ type: 'ONEPACE_PLAYER_PREFERENCES', payload: { playbackRate: 1, startAtSeconds: 0, autoplay: true } });
+  assert.equal(video.playCalls, 1);
+  video.paused = true;
+  runtimeListener({ type: 'ONEPACE_PLAYER_PREFERENCES', payload: { playbackRate: 1, startAtSeconds: 0, autoplay: true } });
+  assert.equal(video.playCalls, 1);
+});
+
+test('does not start playback without an autoplay request', async () => {
+  const { runtimeListener, video } = await runPlayerFrame();
+  runtimeListener({ type: 'ONEPACE_PLAYER_PREFERENCES', payload: { playbackRate: 1, startAtSeconds: 0 } });
+  assert.equal(video.playCalls, 0);
 });

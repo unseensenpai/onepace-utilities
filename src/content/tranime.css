@@ -1,0 +1,15 @@
+/* TRanimeizle on top of animpow.css: undo the site's bootstrap columns inside the kept branch and
+   lay the fansub selector and the source list out as compact button rows above the player. */
+html.apw-focus [data-apw="keep"]{float:none!important;height:auto!important;max-height:none!important;min-height:0!important}
+html.apw-focus #videoPlayer iframe{border:0;display:block;height:100%!important;width:100%!important}
+html.apw-focus [data-apw="source"]{background:transparent!important;float:none!important;height:auto!important;max-height:none!important;overflow:visible!important;width:auto!important}
+/* The site positions the source list as a sidebar and sizes its buttons; make it a compact row. */
+html.apw-focus .videoSource-playlist,html.apw-focus .videoSource-items,html.apw-focus .videoSource-items ol{inset:auto!important;position:static!important;transform:none!important;white-space:normal!important;width:100%!important}
+html.apw-focus .videoSource-items ol{display:flex!important;flex-wrap:wrap!important;gap:6px;list-style:none;margin:0!important;padding:8px 12px!important}
+html.apw-focus .videoSource-items .sourceBtn{align-items:center;background:#343c48!important;border:0!important;border-radius:8px!important;color:#fff!important;cursor:pointer;display:inline-flex!important;flex:0 0 auto!important;font:600 13px/1.2 system-ui,sans-serif!important;height:auto!important;margin:0!important;max-width:none!important;min-height:0!important;min-width:0!important;padding:7px 12px!important;width:auto!important}
+html.apw-focus .videoSource-items .sourceBtn.selected{background:#318dca!important}
+html.apw-focus .videoSource-items .sourceBtn *{color:inherit!important;font:inherit!important;height:auto!important;margin:0!important;padding:0!important}
+html.apw-focus .videoSource-items .sourceBtn::before,html.apw-focus .videoSource-items .sourceBtn ::before{font:inherit!important;margin-right:4px!important;opacity:.7;position:static!important}
+html.apw-focus .videoSource-items .sourceBtn small,html.apw-focus .videoSource-items .sourceBtn br{display:none!important}
+html.apw-focus .fansubSelector{background:#343c48!important;border:0!important;border-radius:8px!important;color:#fff!important;font:600 13px/1.2 system-ui,sans-serif!important;padding:7px 12px!important}
+html.apw-focus .playlist-title[data-apw="source"]{background:transparent!important;margin:8px auto 0!important;padding:0 12px!important}
