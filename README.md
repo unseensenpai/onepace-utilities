@@ -1,6 +1,6 @@
 # OnePace Utilities
 
-> A focused, multilingual viewing companion for OnePaceTR.
+> A focused, multilingual viewing companion for OnePaceTR, AnimPow, and TRanimeizle.
 
 [English](#english) · [Türkçe](#türkçe) · [Español](#español)
 
@@ -10,7 +10,7 @@
 
 ## English
 
-OnePace Utilities is a Chromium extension that improves the viewing experience on OnePaceTR. It turns the episode page into a focused player layout and adds an **Arc Master** panel for navigating arcs, tracking progress, resuming episodes, and managing playback preferences.
+OnePace Utilities is a Chromium extension that improves the viewing experience on OnePaceTR, and on One Piece episodes at AnimPow and TRanimeizle. It turns the episode page into a focused player layout and adds an **Arc Master** panel for navigating arcs, tracking progress, resuming episodes, and managing playback preferences.
 
 ### Features
 
@@ -28,6 +28,16 @@ OnePace Utilities is a Chromium extension that improves the viewing experience o
 - Manga and anime source references when provided by OnePaceTR
 - Interface languages: English, Turkish, and Spanish
 
+#### AnimPow and TRanimeizle
+
+On these sites, Arc Master groups One Piece episodes by story arc and tags canon, mixed, filler, and anime-canon episodes. The panel there is in Turkish.
+
+- The same focused layout, progress tracking, resume, start time, and playback speed
+- 15-second seek buttons and ← / → shortcuts
+- A **next episode** button over the player during the last 30 seconds. Using it marks the episode as watched. If the episode simply ends, the next one starts after a 5-second countdown.
+- AnimPow: an optional setting that blocks the site's online-user WebSocket
+- TRanimeizle: the first video source is selected automatically, through the site's pre-video screen
+
 ### Installation
 
 #### From a release
@@ -40,7 +50,7 @@ OnePace Utilities is a Chromium extension that improves the viewing experience o
    - Brave: `brave://extensions`
 4. Enable **Developer mode**.
 5. Select **Load unpacked** and choose the extracted folder containing `manifest.json`.
-6. Open an episode on OnePaceTR. The extension activates automatically.
+6. Open an episode on OnePaceTR, AnimPow, or TRanimeizle. The extension activates automatically.
 
 #### From source
 
@@ -53,15 +63,15 @@ Enable **Developer mode** on your browser's extensions page, select **Load unpac
 
 ### Usage
 
-Open any episode page on OnePaceTR. Arc Master appears beside the player and highlights the active arc and episode. Use the gear button to change the language, resume behavior, episode start time, playback speed, and automatic next-episode setting.
+Open any episode page on a supported site. Arc Master appears beside the player and highlights the active arc and episode. Use the gear button to change the language, resume behavior, episode start time, playback speed, and automatic next-episode setting.
 
-Progress and preferences are stored through the browser extension storage APIs. The extension requires access to OnePaceTR and its supported embedded players to synchronize playback state and apply your preferences.
+Progress and preferences are stored through the browser extension storage APIs. The extension requires access to the supported sites and their embedded players to synchronize playback state and apply your preferences.
 
 ---
 
 ## Türkçe
 
-OnePace Utilities, OnePaceTR üzerindeki izleme deneyimini geliştiren Chromium tabanlı bir tarayıcı eklentisidir. Bölüm sayfasını daha odaklı bir oynatıcı düzenine dönüştürür; arc ve bölüm gezintisi, ilerleme takibi, kaldığın yerden devam etme ve oynatıcı tercihleri için **Arc Master** panelini ekler.
+OnePace Utilities, OnePaceTR ile AnimPow ve TRanimeizle'deki One Piece bölümlerinde izleme deneyimini geliştiren Chromium tabanlı bir tarayıcı eklentisidir. Bölüm sayfasını daha odaklı bir oynatıcı düzenine dönüştürür; arc ve bölüm gezintisi, ilerleme takibi, kaldığın yerden devam etme ve oynatıcı tercihleri için **Arc Master** panelini ekler.
 
 ### Özellikler
 
@@ -79,6 +89,16 @@ OnePace Utilities, OnePaceTR üzerindeki izleme deneyimini geliştiren Chromium 
 - OnePaceTR tarafından sunulduğunda manga ve anime kaynak bilgileri
 - Türkçe, İngilizce ve İspanyolca arayüz desteği
 
+#### AnimPow ve TRanimeizle
+
+Bu sitelerde Arc Master, One Piece bölümlerini hikâye arc'larına göre gruplar ve canon, karışık, filler ve anime canon bölümleri işaretler. Panel bu sitelerde Türkçedir.
+
+- Aynı odaklı görünüm, ilerleme takibi, kaldığın yerden devam, başlangıç zamanı ve oynatma hızı
+- 15 saniye ileri/geri sarma düğmeleri ve ← / → kısayolları
+- Son 30 saniyede oynatıcının üzerinde **sıradaki bölüm** düğmesi; basınca bölüm izlendi sayılır. Bölüm kendiliğinden biterse sıradaki bölüm 5 saniyelik geri sayımla açılır.
+- AnimPow: sitenin çevrimiçi kullanıcı WebSocket bağlantısını engelleyen isteğe bağlı ayar
+- TRanimeizle: ilk video kaynağı, sitenin ön video ekranı da geçilerek otomatik seçilir
+
 ### Kurulum
 
 #### Sürüm paketinden
@@ -91,7 +111,7 @@ OnePace Utilities, OnePaceTR üzerindeki izleme deneyimini geliştiren Chromium 
    - Brave: `brave://extensions`
 4. **Geliştirici modu** seçeneğini etkinleştir.
 5. **Paketlenmemiş öğe yükle** seçeneğine bas ve `manifest.json` dosyasını içeren klasörü seç.
-6. OnePaceTR üzerinde bir bölüm aç. Eklenti otomatik olarak etkinleşir.
+6. OnePaceTR, AnimPow veya TRanimeizle üzerinde bir bölüm aç. Eklenti otomatik olarak etkinleşir.
 
 #### Kaynak koddan
 
@@ -104,15 +124,15 @@ Tarayıcının eklentiler sayfasında **Geliştirici modu** seçeneğini etkinle
 
 ### Kullanım
 
-OnePaceTR üzerinde herhangi bir bölüm sayfasını aç. Arc Master oynatıcının yanında görünür; etkin arc ve bölümü vurgular. Dil, kaldığın yerden devam etme davranışı, bölüm başlangıç zamanı, oynatma hızı ve otomatik sonraki bölüm ayarlarını değiştirmek için dişli düğmesini kullan.
+Desteklenen bir sitede herhangi bir bölüm sayfasını aç. Arc Master oynatıcının yanında görünür; etkin arc ve bölümü vurgular. Dil, kaldığın yerden devam etme davranışı, bölüm başlangıç zamanı, oynatma hızı ve otomatik sonraki bölüm ayarlarını değiştirmek için dişli düğmesini kullan.
 
-İzleme ilerlemesi ve tercihler tarayıcı eklentisinin depolama API'leri aracılığıyla saklanır. Eklenti, oynatma durumunu eşitlemek ve tercihlerini uygulamak için OnePaceTR ile desteklenen gömülü oynatıcılara erişim ister.
+İzleme ilerlemesi ve tercihler tarayıcı eklentisinin depolama API'leri aracılığıyla saklanır. Eklenti, oynatma durumunu eşitlemek ve tercihlerini uygulamak için desteklenen sitelere ve gömülü oynatıcılarına erişim ister.
 
 ---
 
 ## Español
 
-OnePace Utilities es una extensión para navegadores basados en Chromium que mejora la experiencia de reproducción en OnePaceTR. Convierte la página del episodio en una vista centrada en el reproductor y añade un panel **Maestro de Arcos** para navegar por arcos y episodios, registrar el progreso, reanudar la reproducción y gestionar las preferencias del reproductor.
+OnePace Utilities es una extensión para navegadores basados en Chromium que mejora la experiencia de reproducción en OnePaceTR y en los episodios de One Piece de AnimPow y TRanimeizle. Convierte la página del episodio en una vista centrada en el reproductor y añade un panel **Maestro de Arcos** para navegar por arcos y episodios, registrar el progreso, reanudar la reproducción y gestionar las preferencias del reproductor.
 
 ### Funciones
 
@@ -130,6 +150,16 @@ OnePace Utilities es una extensión para navegadores basados en Chromium que mej
 - Referencias del manga y del anime cuando OnePaceTR las proporciona
 - Interfaz disponible en español, inglés y turco
 
+#### AnimPow y TRanimeizle
+
+En estos sitios, el Maestro de Arcos agrupa los episodios de One Piece por arcos y marca los episodios canon, mixtos, de relleno y canon del anime. Allí el panel está en turco.
+
+- La misma vista enfocada, registro del progreso, reanudación, tiempo de inicio y velocidad de reproducción
+- Botones para avanzar o retroceder 15 segundos y atajos ← / →
+- Un botón de **siguiente episodio** sobre el reproductor durante los últimos 30 segundos, que marca el episodio como visto. Si el episodio termina sin más, el siguiente empieza tras una cuenta atrás de 5 segundos.
+- AnimPow: un ajuste opcional que bloquea el WebSocket de usuarios en línea del sitio
+- TRanimeizle: la primera fuente de vídeo se selecciona automáticamente, pasando por la pantalla previa del sitio
+
 ### Instalación
 
 #### Desde una versión publicada
@@ -142,7 +172,7 @@ OnePace Utilities es una extensión para navegadores basados en Chromium que mej
    - Brave: `brave://extensions`
 4. Activa el **Modo de desarrollador**.
 5. Selecciona **Cargar descomprimida** y elige la carpeta extraída que contiene `manifest.json`.
-6. Abre un episodio en OnePaceTR. La extensión se activará automáticamente.
+6. Abre un episodio en OnePaceTR, AnimPow o TRanimeizle. La extensión se activará automáticamente.
 
 #### Desde el código fuente
 
@@ -155,9 +185,9 @@ Activa el **Modo de desarrollador** en la página de extensiones del navegador, 
 
 ### Uso
 
-Abre cualquier página de episodio en OnePaceTR. El Maestro de Arcos aparecerá junto al reproductor y resaltará el arco y el episodio activos. Usa el botón del engranaje para cambiar el idioma, la reanudación, el tiempo de inicio, la velocidad de reproducción y el avance automático al siguiente episodio.
+Abre cualquier página de episodio en un sitio compatible. El Maestro de Arcos aparecerá junto al reproductor y resaltará el arco y el episodio activos. Usa el botón del engranaje para cambiar el idioma, la reanudación, el tiempo de inicio, la velocidad de reproducción y el avance automático al siguiente episodio.
 
-El progreso y las preferencias se guardan mediante las API de almacenamiento del navegador. La extensión necesita acceso a OnePaceTR y a sus reproductores integrados compatibles para sincronizar la reproducción y aplicar tus preferencias.
+El progreso y las preferencias se guardan mediante las API de almacenamiento del navegador. La extensión necesita acceso a los sitios compatibles y a sus reproductores integrados para sincronizar la reproducción y aplicar tus preferencias.
 
 ---
 
@@ -173,11 +203,15 @@ Pushing a Git tag in the `v*` format runs the test suite and creates a ZIP archi
 
 ## Compatibility
 
-OnePace Utilities targets Chromium-based browsers and currently integrates with OnePaceTR's Clone (AbyssPlayer), Sibnet, and Google Drive embeds.
+OnePace Utilities targets Chromium-based browsers and currently integrates with:
+
+- OnePaceTR, with its Clone (AbyssPlayer), Sibnet, and Google Drive embeds
+- AnimPow (`animpow.com`), whose player runs on the page itself
+- TRanimeizle (`tranimeizle.live`, `tranimeizle.io`), with its AitrVip (`optraco.top`) embed tested. Sibnet and Google Drive embeds are supported too. Mail.ru, MixDrop, Vidmoly, Vudeo, Yourupload, and Mega are enabled but not yet tested.
 
 ## Disclaimer
 
-This is an independent, community-made project. It is not affiliated with or endorsed by One Pace, OnePaceTR, Toei Animation, Shueisha, or any streaming provider. One Piece and related names and imagery belong to their respective owners.
+This is an independent, community-made project. It is not affiliated with or endorsed by One Pace, OnePaceTR, AnimPow, TRanimeizle, Toei Animation, Shueisha, or any streaming provider. One Piece and related names and imagery belong to their respective owners.
 
 ## License
 
