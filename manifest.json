@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "OnePace Utilities",
-  "version": "0.2.0",
-  "description": "Arc Master, izleme ilerlemesi ve oynatıcı ayarları için OnePaceTR yardımcı eklentisi.",
+  "version": "0.3.0",
+  "description": "Arc Master, izleme ilerlemesi ve oynatıcı ayarları için OnePaceTR ve AnimPow yardımcı eklentisi.",
   "icons": {
     "16": "assets/icons/icon-16.png",
     "32": "assets/icons/icon-32.png",
@@ -18,9 +18,10 @@
       "128": "assets/icons/icon-128.png"
     }
   },
-  "permissions": ["storage", "webNavigation"],
+  "permissions": ["storage", "webNavigation", "declarativeNetRequest", "scripting"],
   "host_permissions": [
     "https://www.onepacetr.net/*",
+    "https://animpow.com/*",
     "*://*.abyssplayer.com/*",
     "*://*.sibnet.ru/*",
     "https://drive.google.com/*"
@@ -33,6 +34,12 @@
       "matches": ["https://www.onepacetr.net/*"],
       "js": ["src/shared/backup.js", "src/content/content.js"],
       "css": ["src/content/styles.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://animpow.com/*"],
+      "js": ["src/shared/animpow-core.js", "src/content/animpow.js"],
+      "css": ["src/content/animpow.css"],
       "run_at": "document_idle"
     },
     {
