@@ -1,3 +1,5 @@
+/* Sizes are in em from fixed px roots (#apw-panel, #apw-settings, #apw-toggle, #apw-next) so the
+   panel looks the same whatever root font size the host site sets. */
 /* Focus layout: the site's DOM only carries data-apw markers set by animpow.js. */
 html.apw-focus body{background:#11151b!important}
 html.apw-focus [data-apw="hidden"]{display:none!important}
@@ -6,17 +8,17 @@ html.apw-focus [data-apw="player"]{aspect-ratio:16/9;border-radius:0!important;h
 html.apw-focus.apw-panel-open body{padding-right:360px!important}
 html.apw-focus [data-apw="source"]{display:block!important;margin:12px auto 0!important;max-width:min(100%,calc(100vh * 16 / 9))!important}
 
-#apw-panel{background:#242a33;bottom:0;box-sizing:border-box;color:#f4f6f8;display:flex;flex-direction:column;font-family:system-ui,sans-serif;gap:10px;padding:14px;position:fixed;right:0;top:0;width:360px;z-index:2147483646}
-#apw-panel button,#apw-toggle,#apw-settings button{background:#343c48;border:0;border-radius:9px;color:#fff;cursor:pointer;font:inherit;font-size:.8rem;padding:8px 10px}
+#apw-panel{background:#242a33;bottom:0;box-sizing:border-box;color:#f4f6f8;display:flex;flex-direction:column;font-family:system-ui,sans-serif;font-size:16px;gap:10px;padding:14px;position:fixed;right:0;top:0;width:360px;z-index:2147483646}
+#apw-panel button,#apw-toggle,#apw-settings button{background:#343c48;border:0;border-radius:9px;color:#fff;cursor:pointer;font:inherit;font-size:.8em;padding:8px 10px}
 #apw-panel button:hover,#apw-toggle:hover{background:#3d4654}
 .apw-header{align-items:center;display:flex;gap:12px;justify-content:space-between}
 .apw-header div{display:grid;gap:3px}
-.apw-header strong{color:#45a9e8;font-size:.82rem;letter-spacing:.08em}
-.apw-header div span{color:#abb5c3;font-size:.75rem}
+.apw-header strong{color:#45a9e8;font-size:.82em;letter-spacing:.08em}
+.apw-header div span{color:#abb5c3;font-size:.75em}
 .apw-header>span{display:flex;gap:6px}
 .apw-now{align-items:center;display:flex;gap:8px;justify-content:space-between}
-.apw-now strong{font-size:1.05rem}
-.apw-badge{border-radius:999px;font-size:.7rem;padding:3px 9px}
+.apw-now strong{font-size:1.05em}
+.apw-badge{border-radius:999px;font-size:.7em;padding:3px 9px}
 .apw-badge.apw-type-canon{background:#2e5c3f;color:#a8ecc0}
 .apw-badge.apw-type-mixed{background:#5c4a1f;color:#ffd77a}
 .apw-badge.apw-type-filler{background:#5c2626;color:#ffb0b0}
@@ -26,9 +28,9 @@ html.apw-focus [data-apw="source"]{display:block!important;margin:12px auto 0!im
 .apw-speed button{flex:1;padding:6px 0!important}
 #apw-panel .apw-speed button.selected{background:#318dca}
 .apw-nav{justify-content:space-between}
-.apw-nav a{background:#343c48;border-radius:8px;color:#fff;font-size:.78rem;padding:7px 10px;text-decoration:none}
-.apw-resume{background:#318dca;border-radius:9px;color:#fff;font-size:.82rem;padding:9px;text-align:center;text-decoration:none}
-.apw-legend{display:flex;font-size:.7rem;gap:12px}
+.apw-nav a{background:#343c48;border-radius:8px;color:#fff;font-size:.78em;padding:7px 10px;text-decoration:none}
+.apw-resume{background:#318dca;border-radius:9px;color:#fff;font-size:.82em;padding:9px;text-align:center;text-decoration:none}
+.apw-legend{display:flex;font-size:.7em;gap:12px}
 .apw-legend span::before{border-radius:50%;content:"";display:inline-block;height:8px;margin-right:5px;width:8px}
 .apw-legend .apw-type-mixed::before{background:#e0b44c}
 .apw-legend .apw-type-filler::before{background:#e05c5c}
@@ -38,33 +40,33 @@ html.apw-focus [data-apw="source"]{display:block!important;margin:12px auto 0!im
 .apw-arc summary{cursor:pointer;display:flex;justify-content:space-between;list-style:none}
 .apw-arc summary::-webkit-details-marker{display:none}
 .apw-arc summary span{font-weight:700}
-.apw-arc summary small{color:#abb5c3;font-size:.75rem}
+.apw-arc summary small{color:#abb5c3;font-size:.75em}
 .apw-arc[open]>summary{background:#242a33;position:sticky;top:0;z-index:2}
 .apw-arc-completed summary span,.apw-arc-completed summary small{color:#74d99d}
 .apw-arc-active{background:linear-gradient(90deg,rgba(42,142,201,.15),transparent);border-left:3px solid #43aae7;padding-left:8px}
 .apw-arc-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-#apw-panel .apw-arc-actions button{background:transparent;border:1px solid #3f8fbd;color:#81cdf4;font-size:.7rem;padding:5px 7px}
+#apw-panel .apw-arc-actions button{background:transparent;border:1px solid #3f8fbd;color:#81cdf4;font-size:.7em;padding:5px 7px}
 .apw-grid{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));padding-top:10px}
-.apw-episode{background:#303744;border-left:3px solid transparent;border-radius:8px;color:#edf3f7;font-size:.8rem;padding:7px 6px;text-align:center;text-decoration:none}
+.apw-episode{background:#303744;border-left:3px solid transparent;border-radius:8px;color:#edf3f7;font-size:.8em;padding:7px 6px;text-align:center;text-decoration:none}
 .apw-episode.active{background:#328fcd;outline:1px solid #80caf4}
 .apw-episode.completed strong{color:#71d596}
 .apw-episode.in-progress strong{color:#ffb35c}
 .apw-episode.apw-type-mixed{border-left-color:#e0b44c}
 .apw-episode.apw-type-filler{border-left-color:#e05c5c;opacity:.75}
 .apw-episode.apw-type-anime-canon{border-left-color:#a77be6}
-.apw-countdown{align-items:center;background:#17354a;border-radius:9px;display:flex;font-size:.8rem;justify-content:space-between;padding:8px}
+.apw-countdown{align-items:center;background:#17354a;border-radius:9px;display:flex;font-size:.8em;justify-content:space-between;padding:8px}
 
-#apw-next{display:flex;font-family:system-ui,sans-serif;gap:4px;position:fixed;z-index:2147483647}
-#apw-next button{background:rgba(23,27,33,.88);border:1px solid #45a9e8;border-radius:9px;color:#fff;cursor:pointer;font:inherit;font-size:.9rem;padding:10px 14px}
+#apw-next{display:flex;font-family:system-ui,sans-serif;font-size:16px;gap:4px;position:fixed;z-index:2147483647}
+#apw-next button{background:rgba(23,27,33,.88);border:1px solid #45a9e8;border-radius:9px;color:#fff;cursor:pointer;font:inherit;font-size:.9em;padding:10px 14px}
 #apw-next button:hover{background:#318dca}
 #apw-next [data-action="dismiss"]{border-color:#46505d;padding:10px}
 
-#apw-toggle{position:fixed;right:18px;top:18px;z-index:2147483646}
-#apw-settings{background:#242a33;border:1px solid #3b4450;border-radius:14px;bottom:20px;color:#f4f6f8;display:grid;font-family:system-ui,sans-serif;font-size:.82rem;gap:10px;max-width:320px;padding:14px;position:fixed;right:380px;z-index:2147483647}
+#apw-toggle{font-size:13px;position:fixed;right:18px;top:18px;z-index:2147483646}
+#apw-settings{background:#242a33;border:1px solid #3b4450;border-radius:14px;bottom:20px;color:#f4f6f8;display:grid;font-family:system-ui,sans-serif;font-size:13px;gap:10px;max-width:320px;padding:14px;position:fixed;right:380px;z-index:2147483647}
 #apw-settings[hidden]{display:none!important}
 #apw-settings header,#apw-settings label{align-items:center;display:flex;gap:8px;justify-content:space-between}
 #apw-settings input[type=number]{background:#171b21;border:1px solid #46505d;border-radius:7px;color:#fff;padding:5px;width:70px}
-#apw-settings p{color:#abb5c3;font-size:.75rem;margin:0}
+#apw-settings p{color:#abb5c3;font-size:.92em;margin:0}
 
 @media (max-width:991px){
   html.apw-focus.apw-panel-open body{padding-right:0!important}

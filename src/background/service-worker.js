@@ -1,3 +1,12 @@
+function sendToPlayerFrames(tabId, message) {
+  chrome.webNavigation.getAllFrames({ tabId }, (frames) => {
+    for (const frame of frames ?? []) {
+      if (frame.frameId === 0) continue;
+      chrome.tabs.sendMessage(tabId, message, { frameId: frame.frameId }).catch(() => undefined);
+    }
+  });
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'ANIMPOW_SYNC_SOCKET_RULES') {
     syncAnimPowSocketRules(message.settings).then(() => sendResponse({ ok: true }), () => sendResponse({ ok: false }));
@@ -6,16 +15,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!sender.tab?.id) return;
 
   if (message.type === 'ONEPACE_APPLY_PLAYER_PREFERENCES') {
-    chrome.webNavigation.getAllFrames({ tabId: sender.tab.id }, (frames) => {
-      for (const frame of frames ?? []) {
-        if (frame.frameId === 0) continue;
-        chrome.tabs.sendMessage(sender.tab.id, {
-          type: 'ONEPACE_PLAYER_PREFERENCES',
-          payload: message.payload
-        }, { frameId: frame.frameId }).catch(() => undefined);
-      }
-    });
+    sendToPlayerFrames(sender.tab.id, { type: 'ONEPACE_PLAYER_PREFERENCES', payload: message.payload });
   }
+
+  if (message.type === 'ONEPACE_PLAYER_COMMAND') sendToPlayerFrames(sender.tab.id, message);
 
   if (message.type === 'ONEPACE_PLAYER_EVENT' || message.type === 'ONEPACE_PLAYER_READY') {
     chrome.tabs.sendMessage(sender.tab.id, message, { frameId: 0 }).catch(() => undefined);

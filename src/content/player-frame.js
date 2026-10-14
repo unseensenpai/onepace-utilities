@@ -130,6 +130,11 @@ function bindGoogleDrivePlayer() {
 function applyPreferences(video) {
   if (!video || !currentPreferences) return;
   video.playbackRate = Number(currentPreferences.playbackRate) || 1;
+  // Once per video; the browser may still refuse playback without a user gesture, which is fine.
+  if (currentPreferences.autoplay && !video.dataset.onepaceUtilitiesAutoplayed && video.paused) {
+    video.dataset.onepaceUtilitiesAutoplayed = 'true';
+    video.play()?.catch?.(() => undefined);
+  }
   if (!Object.hasOwn(currentPreferences, 'startAtSeconds')) return;
   if (video.dataset.onepaceUtilitiesStartApplied) return;
   const startAt = Number(currentPreferences.startAtSeconds) || 0;
@@ -170,6 +175,42 @@ function bindPlayer() {
   stopGoogleDriveProgress();
 }
 
+function seekVideo(seconds) {
+  const video = getVideo();
+  if (!video || !Number.isFinite(video.duration)) return;
+  video.currentTime = Math.min(Math.max(0, video.currentTime + seconds), video.duration - 0.5);
+}
+
+const NEXT_PROMPT_ID = 'onepace-utilities-next';
+
+// The page decides when to offer the next episode; the button lives in this frame so it stays
+// visible when the player itself is fullscreen.
+function showNextPrompt(label) {
+  document.getElementById(NEXT_PROMPT_ID)?.remove();
+  if (!label) return;
+  const prompt = document.createElement('div');
+  prompt.id = NEXT_PROMPT_ID;
+  prompt.style.cssText = 'position:fixed;right:24px;bottom:72px;z-index:2147483647;display:flex;gap:4px;font:14px system-ui,sans-serif';
+  const buttonStyle = 'background:rgba(23,27,33,.88);border:1px solid #45a9e8;border-radius:9px;color:#fff;cursor:pointer;font:inherit;padding:10px 14px';
+  for (const [action, text] of [['next', label], ['dismiss', '×']]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = text;
+    button.style.cssText = buttonStyle;
+    button.addEventListener('click', () => {
+      prompt.remove();
+      emit(action === 'next' ? 'next-requested' : 'next-dismissed', {});
+    });
+    prompt.append(button);
+  }
+  (document.fullscreenElement ?? document.body).append(prompt);
+}
+
+function handleCommand(message) {
+  if (message.command === 'seek') seekVideo(Number(message.seconds) || 0);
+  if (message.command === 'next-prompt') showNextPrompt(message.label);
+}
+
 new MutationObserver(bindPlayer).observe(document.documentElement, {
   childList: true,
   subtree: true,
@@ -181,6 +222,10 @@ sendRuntimeMessage({ type: 'ONEPACE_PLAYER_READY' });
 
 if (typeof chrome?.runtime?.onMessage?.addListener === 'function') {
   chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'ONEPACE_PLAYER_COMMAND') {
+      handleCommand(message);
+      return;
+    }
     if (message.type !== 'ONEPACE_PLAYER_PREFERENCES') return;
     currentPreferences = message.payload;
     bindPlayer();
