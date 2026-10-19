@@ -49,6 +49,11 @@ html.apw-focus [data-apw="source"]{display:block!important;margin:12px auto 0!im
 .apw-grid{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));padding-top:10px}
 .apw-episode{background:#303744;border-left:3px solid transparent;border-radius:8px;color:#edf3f7;font-size:.8em;padding:7px 6px;text-align:center;text-decoration:none}
 .apw-episode.active{background:#328fcd;outline:1px solid #80caf4}
+.apw-grid.apw-titled{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.apw-titled .apw-episode{display:flex;flex-direction:column;gap:3px;text-align:left}
+.apw-episode span{-webkit-box-orient:vertical;-webkit-line-clamp:2;color:#b9c3cf;display:-webkit-box;font-size:.88em;line-height:1.3;overflow:hidden}
+.apw-episode.active span{color:#eaf5fc}
+.apw-now-title{color:#b9c3cf;font-size:.8em;line-height:1.35;margin:-4px 0 0}
 .apw-episode.completed strong{color:#71d596}
 .apw-episode.in-progress strong{color:#ffb35c}
 .apw-episode.apw-type-mixed{border-left-color:#e0b44c}

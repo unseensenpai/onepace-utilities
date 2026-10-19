@@ -32,7 +32,7 @@ test('loads the AnimPow core before its page content script on every AnimPow pag
   const entry = manifest.content_scripts.find((item) => item.matches.includes('https://animpow.com/*'));
 
   assert.ok(entry, 'AnimPow content script entry is missing');
-  assert.deepEqual(entry.js, ['src/shared/animpow-core.js', 'src/content/animpow.js']);
+  assert.deepEqual(entry.js, ['src/shared/animpow-core.js', 'src/shared/one-piece-titles.js', 'src/content/animpow.js']);
   assert.deepEqual(entry.css, ['src/content/animpow.css']);
 });
 
@@ -41,6 +41,17 @@ test('loads the shared arc data and TRanimeizle core before its page content scr
   const entry = manifest.content_scripts.find((item) => item.matches.includes('https://www.tranimeizle.live/*'));
 
   assert.ok(entry, 'TRanimeizle content script entry is missing');
-  assert.deepEqual(entry.js, ['src/shared/animpow-core.js', 'src/shared/tranime-core.js', 'src/content/tranime.js']);
+  assert.deepEqual(entry.js, ['src/shared/animpow-core.js', 'src/shared/one-piece-titles.js', 'src/shared/tranime-core.js', 'src/content/tranime.js']);
   assert.deepEqual(entry.css, ['src/content/animpow.css', 'src/content/tranime.css']);
+});
+
+test('loads the JW Player bridge in the page world of every player frame', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../manifest.json', import.meta.url), 'utf8'));
+  const bridge = manifest.content_scripts.find((item) => item.js.includes('src/content/jwplayer-bridge.js'));
+  const frame = manifest.content_scripts.find((item) => item.js.includes('src/content/player-frame.js'));
+
+  assert.ok(bridge, 'JW Player bridge entry is missing');
+  assert.equal(bridge.world, 'MAIN');
+  assert.equal(bridge.all_frames, true);
+  assert.deepEqual(bridge.matches, frame.matches);
 });

@@ -17,6 +17,8 @@ const DEFAULT_SETTINGS = {
   blockSocket: false
 };
 const TYPE_LABELS = { canon: 'Canon', mixed: 'Karışık', filler: 'Filler', 'anime-canon': 'Anime canon' };
+const titles = globalThis.OnePieceTitles;
+const TITLE_LANGUAGE = titles.preferredLanguage(navigator.language);
 
 let settings = { ...DEFAULT_SETTINGS };
 let progressRecords = [];
@@ -296,13 +298,25 @@ function arcLabel(arc) {
   return arc.name ?? `Bölüm ${arc.from}–${arc.to}`;
 }
 
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+}
+
+// Episode titles are bundled for One Piece only, so other shows keep the compact number grid.
+function episodeTitle(context, number) {
+  return context.coreId === core.ONE_PIECE_CORE_ID ? titles.episodeTitle(number, TITLE_LANGUAGE) : '';
+}
+
 function episodeGrid(context, arc) {
-  return `<div class="apw-grid">${arc.episodes.map((number) => {
+  const titled = Boolean(episodeTitle(context, arc.from));
+  return `<div class="apw-grid${titled ? ' apw-titled' : ''}">${arc.episodes.map((number) => {
     const record = recordFor(context, number);
     const type = core.episodeType(context.coreId, number);
+    const title = episodeTitle(context, number);
     const mark = record?.state === 'completed' ? '✓ ' : record?.state === 'in-progress' ? '◐ ' : '';
     const classes = ['apw-episode', record?.state ?? 'unseen', type ? `apw-type-${type}` : '', number === context.episode ? 'active' : ''].join(' ');
-    return `<a class="${classes}" href="${episodeLink(context, number)}" title="${type ? TYPE_LABELS[type] : ''}"><strong>${mark}${number}</strong></a>`;
+    const tooltip = [title, type ? TYPE_LABELS[type] : ''].filter(Boolean).join(' · ');
+    return `<a class="${classes}" href="${episodeLink(context, number)}" title="${escapeHtml(tooltip)}"><strong>${mark}${number}</strong>${title ? `<span>${escapeHtml(title)}</span>` : ''}</a>`;
   }).join('')}</div>`;
 }
 
@@ -439,6 +453,7 @@ function render(force = false) {
       <strong>${currentArc ? `${arcLabel(currentArc)} · ` : ''}${context.episode}. Bölüm</strong>
       ${type ? `<span class="apw-badge apw-type-${type}">${TYPE_LABELS[type]}</span>` : ''}
     </div>
+    ${episodeTitle(context, context.episode) ? `<p class="apw-now-title">${escapeHtml(episodeTitle(context, context.episode))}</p>` : ''}
     <div class="apw-controls">
       <button type="button" data-action="seek-back">⏪ ${SEEK_STEP_SECONDS} sn</button>
       <button type="button" data-action="seek-forward">${SEEK_STEP_SECONDS} sn ⏩</button>

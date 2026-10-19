@@ -37,6 +37,8 @@ On these sites, Arc Master groups One Piece episodes by story arc and tags canon
 - A **next episode** button over the player during the last 30 seconds. Using it marks the episode as watched. If the episode simply ends, the next one starts after a 5-second countdown.
 - AnimPow: an optional setting that blocks the site's online-user WebSocket
 - TRanimeizle: the first video source is selected automatically, through the site's pre-video screen
+- TRanimeizle: the fansub row, hidden ad players and the transparent click-catching layer over the player are removed, so one click starts playback
+- One Piece episode titles on the episode cards and under the current episode, in Turkish, English, or Spanish (following the browser language). English and most Spanish titles come from Wikipedia; Turkish titles and the remaining Spanish ones are translations.
 
 ### Installation
 
@@ -98,6 +100,8 @@ Bu sitelerde Arc Master, One Piece bölümlerini hikâye arc'larına göre grupl
 - Son 30 saniyede oynatıcının üzerinde **sıradaki bölüm** düğmesi; basınca bölüm izlendi sayılır. Bölüm kendiliğinden biterse sıradaki bölüm 5 saniyelik geri sayımla açılır.
 - AnimPow: sitenin çevrimiçi kullanıcı WebSocket bağlantısını engelleyen isteğe bağlı ayar
 - TRanimeizle: ilk video kaynağı, sitenin ön video ekranı da geçilerek otomatik seçilir
+- TRanimeizle: fansub satırı, gizli reklam oynatıcıları ve oynatıcının üstündeki görünmez tıklama katmanı kaldırılır; oynatma tek tıkla başlar
+- Bölüm kartlarında ve mevcut bölümün altında One Piece bölüm isimleri; tarayıcı diline göre Türkçe, İngilizce veya İspanyolca. İngilizce ve İspanyolca isimlerin çoğu Wikipedia'dan gelir; Türkçe isimler ve kalan İspanyolca isimler çeviridir.
 
 ### Kurulum
 
@@ -159,6 +163,8 @@ En estos sitios, el Maestro de Arcos agrupa los episodios de One Piece por arcos
 - Un botón de **siguiente episodio** sobre el reproductor durante los últimos 30 segundos, que marca el episodio como visto. Si el episodio termina sin más, el siguiente empieza tras una cuenta atrás de 5 segundos.
 - AnimPow: un ajuste opcional que bloquea el WebSocket de usuarios en línea del sitio
 - TRanimeizle: la primera fuente de vídeo se selecciona automáticamente, pasando por la pantalla previa del sitio
+- TRanimeizle: se eliminan la fila de fansubs, los reproductores de anuncios ocultos y la capa transparente que capturaba el primer clic sobre el reproductor, así que un solo clic inicia la reproducción
+- Títulos de los episodios de One Piece en las tarjetas y bajo el episodio actual, en turco, inglés o español (según el idioma del navegador). Los títulos en inglés y la mayoría de los españoles vienen de Wikipedia; los turcos y el resto de los españoles son traducciones.
 
 ### Instalación
 

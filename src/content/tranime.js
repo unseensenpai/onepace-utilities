@@ -18,6 +18,8 @@ const DEFAULT_SETTINGS = {
   autoAdvance: true
 };
 const TYPE_LABELS = { canon: 'Canon', mixed: 'Karışık', filler: 'Filler', 'anime-canon': 'Anime canon' };
+const titles = globalThis.OnePieceTitles;
+const TITLE_LANGUAGE = titles.preferredLanguage(navigator.language);
 
 let settings = { ...DEFAULT_SETTINGS };
 let progressRecords = [];
@@ -89,17 +91,14 @@ function applyPlayerPreferences({ applyStartPosition = false } = {}) {
   sendRuntime({ type: 'ONEPACE_APPLY_PLAYER_PREFERENCES', payload });
 }
 
-// Keeps the player, the fansub selector and the source list; hides every other branch of the page,
-// including ad blocks the site injects later (the observer re-runs this when the body gains children).
+// Keeps the player and the source list; hides every other branch of the page, including the fansub
+// selector (the default fansub's sources are used) and ad blocks the site injects later (the
+// observer re-runs this when the body gains children).
 function applyFocusLayout() {
   document.querySelectorAll('[data-apw]').forEach((element) => element.removeAttribute('data-apw'));
   const player = document.getElementById('videoPlayer');
   if (!player) return;
-  // The fansub row only matters when there is more than one fansub to pick from.
-  const fansubRow = document.querySelectorAll('.fansubSelector').length > 1
-    ? document.querySelector('.fansubSelector').closest('.playlist-title')
-    : null;
-  const sources = [fansubRow, document.querySelector('.videoSource-playlist')].filter(Boolean);
+  const sources = [document.querySelector('.videoSource-playlist')].filter(Boolean);
   const kept = new Set();
   for (const target of [player, ...sources]) {
     for (let node = target; node && node !== document.body; node = node.parentElement) kept.add(node);
@@ -116,6 +115,13 @@ function applyFocusLayout() {
   }
   player.dataset.apw = 'player';
   sources.forEach((element) => { element.dataset.apw = 'source'; });
+  removeHiddenMedia();
+}
+
+// Hiding a branch does not stop what plays inside it: ad frames, ad videos and an embedded YouTube
+// player start with sound on the page's first click, which then never reaches the player.
+function removeHiddenMedia() {
+  document.querySelectorAll('[data-apw="hidden"] :is(iframe, video, audio)').forEach((element) => element.remove());
 }
 
 // Episodes open on the site's "pick a source" placeholder. The site binds its source click handler
@@ -268,13 +274,25 @@ function arcLabel(arc) {
   return arc.name ?? `Bölüm ${arc.from}–${arc.to}`;
 }
 
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+}
+
+// Episode titles are bundled for One Piece only, so other shows keep the compact number grid.
+function episodeTitle(number) {
+  return arcsId === arcsCore.ONE_PIECE_CORE_ID ? titles.episodeTitle(number, TITLE_LANGUAGE) : '';
+}
+
 function episodeGrid(arc) {
-  return `<div class="apw-grid">${arc.episodes.map((number) => {
+  const titled = Boolean(episodeTitle(arc.from));
+  return `<div class="apw-grid${titled ? ' apw-titled' : ''}">${arc.episodes.map((number) => {
     const record = recordFor(number);
     const type = arcsCore.episodeType(arcsId, number);
+    const title = episodeTitle(number);
     const mark = record?.state === 'completed' ? '✓ ' : record?.state === 'in-progress' ? '◐ ' : '';
     const classes = ['apw-episode', record?.state ?? 'unseen', type ? `apw-type-${type}` : '', number === context.episode ? 'active' : ''].join(' ');
-    return `<a class="${classes}" href="${episodeLink(number)}" title="${type ? TYPE_LABELS[type] : ''}"><strong>${mark}${number}</strong></a>`;
+    const tooltip = [title, type ? TYPE_LABELS[type] : ''].filter(Boolean).join(' · ');
+    return `<a class="${classes}" href="${episodeLink(number)}" title="${escapeHtml(tooltip)}"><strong>${mark}${number}</strong>${title ? `<span>${escapeHtml(title)}</span>` : ''}</a>`;
   }).join('')}</div>`;
 }
 
@@ -386,6 +404,7 @@ function render() {
       <strong>${currentArc ? `${arcLabel(currentArc)} · ` : ''}${context.episode}. Bölüm</strong>
       ${type ? `<span class="apw-badge apw-type-${type}">${TYPE_LABELS[type]}</span>` : ''}
     </div>
+    ${episodeTitle(context.episode) ? `<p class="apw-now-title">${escapeHtml(episodeTitle(context.episode))}</p>` : ''}
     <div class="apw-controls">
       <button type="button" data-action="seek-back">⏪ ${SEEK_STEP_SECONDS} sn</button>
       <button type="button" data-action="seek-forward">${SEEK_STEP_SECONDS} sn ⏩</button>
@@ -476,9 +495,12 @@ async function initialize() {
   render();
   // The player frame may have announced itself before storage loaded.
   applyPlayerPreferences({ applyStartPosition: true });
+  // Ads also fill hidden branches later, so the whole tree is watched.
   new MutationObserver(() => {
-    if (settings.focusMode && hasUnmarkedBodyChild()) applyFocusLayout();
-  }).observe(document.body, { childList: true });
+    if (!settings.focusMode) return;
+    if (hasUnmarkedBodyChild()) applyFocusLayout();
+    else removeHiddenMedia();
+  }).observe(document.body, { childList: true, subtree: true });
   startSourceAutoPick();
 }
 

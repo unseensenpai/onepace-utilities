@@ -1,6 +1,7 @@
 let currentPreferences = null;
 let completionSent = false;
 let googleDriveProgressTimer = null;
+const JW_PLAY_EVENT = 'onepace-utilities:jw-play';
 
 function getVideo() {
   return document.querySelector('video');
@@ -127,13 +128,24 @@ function bindGoogleDrivePlayer() {
   }
 }
 
+// JW Player (AitrVip) keeps its own state: playing its bare <video> leaves the player idle, so the
+// next click only wakes it up and a second one is needed. jwplayer-bridge.js starts it through the
+// page's own jwplayer() API instead.
+function startPlayback(video) {
+  if (video.classList?.contains('jw-video')) {
+    document.dispatchEvent(new CustomEvent(JW_PLAY_EVENT));
+    return;
+  }
+  video.play()?.catch?.(() => undefined);
+}
+
 function applyPreferences(video) {
   if (!video || !currentPreferences) return;
   video.playbackRate = Number(currentPreferences.playbackRate) || 1;
   // Once per video; the browser may still refuse playback without a user gesture, which is fine.
   if (currentPreferences.autoplay && !video.dataset.onepaceUtilitiesAutoplayed && video.paused) {
     video.dataset.onepaceUtilitiesAutoplayed = 'true';
-    video.play()?.catch?.(() => undefined);
+    startPlayback(video);
   }
   if (!Object.hasOwn(currentPreferences, 'startAtSeconds')) return;
   if (video.dataset.onepaceUtilitiesStartApplied) return;
@@ -161,7 +173,16 @@ function bindVideo(video) {
   applyPreferences(video);
 }
 
+// A transparent full-size ad layer over the player swallows the first click (and plays an ad sound).
+const CLICK_TRAP_SELECTOR = '[class*="df-ovrly"]';
+
+function removeClickTraps() {
+  if (typeof document.querySelectorAll !== 'function') return;
+  document.querySelectorAll(CLICK_TRAP_SELECTOR).forEach((element) => element.remove());
+}
+
 function bindPlayer() {
+  removeClickTraps();
   const video = getVideo();
   if (video) {
     stopGoogleDriveProgress();

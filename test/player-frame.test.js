@@ -3,13 +3,15 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 
-async function runPlayerFrame({ ranges = [], hostname = 'video.sibnet.ru', menuButtons = [] } = {}) {
+async function runPlayerFrame({ ranges = [], hostname = 'video.sibnet.ru', menuButtons = [], videoClasses = [], clickTraps = [] } = {}) {
   const source = await readFile(new URL('../src/content/player-frame.js', import.meta.url), 'utf8');
   const videoListeners = new Map();
   const sentMessages = [];
+  const documentEvents = [];
   let runtimeListener = null;
   let intervalCallback = null;
   const video = {
+    classList: { contains: (name) => videoClasses.includes(name) },
     currentTime: 10,
     duration: 1845,
     playbackRate: 1,
@@ -34,8 +36,10 @@ async function runPlayerFrame({ ranges = [], hostname = 'video.sibnet.ru', menuB
     },
     document: {
       documentElement: {},
+      dispatchEvent(event) { documentEvents.push(event.type); },
       querySelector(selector) { return selector === 'video' ? video : null; },
       querySelectorAll(selector) {
+        if (selector === '[class*="df-ovrly"]') return clickTraps;
         if (selector === 'input[type="range"]') return ranges;
         if (selector === 'button[aria-haspopup="menu"]') return menuButtons;
         return [];
@@ -43,6 +47,7 @@ async function runPlayerFrame({ ranges = [], hostname = 'video.sibnet.ru', menuB
     },
     location: { hostname },
     Event: class { constructor(type) { this.type = type; } },
+    CustomEvent: class { constructor(type) { this.type = type; } },
     MutationObserver: class {
       constructor() {}
       observe() {}
@@ -52,7 +57,7 @@ async function runPlayerFrame({ ranges = [], hostname = 'video.sibnet.ru', menuB
   };
 
   vm.runInNewContext(source, context);
-  return { getIntervalCallback: () => intervalCallback, runtimeListener, sentMessages, video, videoListeners };
+  return { documentEvents, getIntervalCallback: () => intervalCallback, runtimeListener, sentMessages, video, videoListeners };
 }
 
 async function runGoogleDriveFrame() {
@@ -293,4 +298,18 @@ test('does not start playback without an autoplay request', async () => {
   const { runtimeListener, video } = await runPlayerFrame();
   runtimeListener({ type: 'ONEPACE_PLAYER_PREFERENCES', payload: { playbackRate: 1, startAtSeconds: 0 } });
   assert.equal(video.playCalls, 0);
+});
+
+test('asks the page-world bridge to start JW Player instead of playing its bare video', async () => {
+  const { documentEvents, runtimeListener, video } = await runPlayerFrame({ hostname: 'optraco.top', videoClasses: ['jw-video'] });
+  runtimeListener({ type: 'ONEPACE_PLAYER_PREFERENCES', payload: { playbackRate: 1, startAtSeconds: 0, autoplay: true } });
+  assert.equal(video.playCalls, 0);
+  assert.deepEqual(documentEvents, ['onepace-utilities:jw-play']);
+});
+
+test('removes the transparent ad layer that swallows the first click on the player', async () => {
+  const removed = [];
+  const trap = { remove() { removed.push(this); } };
+  await runPlayerFrame({ hostname: 'optraco.top', clickTraps: [trap] });
+  assert.deepEqual(removed, [trap]);
 });
