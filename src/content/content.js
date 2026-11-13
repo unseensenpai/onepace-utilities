@@ -25,9 +25,9 @@ let playerReady = false;
 let sourceBar = null;
 
 const TRANSLATIONS = {
-  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü izlendi olarak işaretle', markArcCompleted: "Bu arc'taki tüm bölümleri izlendi olarak işaretle", markThroughCurrent: 'Bu bölüme kadar tümünü izlendi olarak işaretle', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', backup: 'Yedekleme', exportData: 'İlerleme ve ayarları dışa aktar', importData: 'İlerleme ve ayarları içe aktar', importPrompt: 'Yedek mevcut verilerle birleştirilecek. Devam edilsin mi?', importAdded: 'Yeni bölüm', importUpdated: 'Güncellenen bölüm', importKept: 'Korunan tamamlanmış bölüm', importInvalid: 'Atlanan geçersiz kayıt', importSuccess: 'Yedek başarıyla içe aktarıldı.', importError: 'Yedek dosyası okunamadı veya geçersiz.', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal', watching: 'Şu an izliyorsun', episode: 'Bölüm' },
-  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark this episode as watched', markArcCompleted: 'Mark every episode in this arc as watched', markThroughCurrent: 'Mark everything through this episode as watched', reset: 'Reset progress for this episode', language: 'Language', backup: 'Backup', exportData: 'Export progress and settings', importData: 'Import progress and settings', importPrompt: 'The backup will be merged with current data. Continue?', importAdded: 'New episodes', importUpdated: 'Updated episodes', importKept: 'Completed episodes preserved', importInvalid: 'Invalid records skipped', importSuccess: 'Backup imported successfully.', importError: 'The backup file could not be read or is invalid.', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel', watching: 'Now watching', episode: 'Episode' },
-  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir automáticamente el siguiente episodio', markCompleted: 'Marcar este episodio como visto', markArcCompleted: 'Marcar todos los episodios de este arco como vistos', markThroughCurrent: 'Marcar como visto todo hasta este episodio', reset: 'Restablecer el progreso de este episodio', language: 'Idioma', backup: 'Copia de seguridad', exportData: 'Exportar progreso y ajustes', importData: 'Importar progreso y ajustes', importPrompt: 'La copia se combinará con los datos actuales. ¿Continuar?', importAdded: 'Episodios nuevos', importUpdated: 'Episodios actualizados', importKept: 'Episodios completados conservados', importInvalid: 'Registros inválidos omitidos', importSuccess: 'Copia de seguridad importada correctamente.', importError: 'No se pudo leer la copia de seguridad o no es válida.', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar', watching: 'Viendo ahora', episode: 'Episodio' }
+  tr: { arcMaster: 'ARC MASTER', settings: 'Ayarlar', resumeAt: 'Kaldığın yer', history: 'İzleme geçmişin burada görünür', resume: 'Kaldığın yere dön', completed: 'tamamlandı', loading: 'Bölüm listesi yükleniyor…', resumePosition: 'Kaldığın yerden devam et', newStart: 'Yeni bölüm başlangıcı', speed: 'Hız', autoAdvance: 'Sonraki bölüme otomatik geç', markCompleted: 'Bu bölümü izlendi olarak işaretle', markArcCompleted: "Bu arc'taki tüm bölümleri izlendi olarak işaretle", markThroughCurrent: 'Bu bölüme kadar tümünü izlendi olarak işaretle', reset: 'Bu bölümün ilerlemesini sıfırla', language: 'Dil', backup: 'Yedekleme', exportData: 'Tüm ilerleme ve ayarları dışa aktar', importData: 'Tüm ilerleme ve ayarları içe aktar', importPrompt: 'Yedek mevcut verilerle birleştirilecek. Devam edilsin mi?', importAdded: 'Yeni bölüm', importUpdated: 'Güncellenen bölüm', importKept: 'Korunan tamamlanmış bölüm', importInvalid: 'Atlanan geçersiz kayıt', importSuccess: 'Yedek başarıyla içe aktarıldı.', importError: 'Yedek dosyası okunamadı veya geçersiz.', openArc: 'Arc Master aç', closeArc: 'Arc Master kapat', nextIn: 'Sonraki bölüm', cancel: 'İptal', watching: 'Şu an izliyorsun', episode: 'Bölüm' },
+  en: { arcMaster: 'ARC MASTER', settings: 'Settings', resumeAt: 'Resume point', history: 'Your watch history appears here', resume: 'Resume watching', completed: 'completed', loading: 'Loading episode list…', resumePosition: 'Resume from saved position', newStart: 'New episode start', speed: 'Speed', source: 'Source', autoAdvance: 'Automatically play next episode', markCompleted: 'Mark this episode as watched', markArcCompleted: 'Mark every episode in this arc as watched', markThroughCurrent: 'Mark everything through this episode as watched', reset: 'Reset progress for this episode', language: 'Language', backup: 'Backup', exportData: 'Export all progress and settings', importData: 'Import all progress and settings', importPrompt: 'The backup will be merged with current data. Continue?', importAdded: 'New episodes', importUpdated: 'Updated episodes', importKept: 'Completed episodes preserved', importInvalid: 'Invalid records skipped', importSuccess: 'Backup imported successfully.', importError: 'The backup file could not be read or is invalid.', openArc: 'Open Arc Master', closeArc: 'Close Arc Master', nextIn: 'Next episode in', cancel: 'Cancel', watching: 'Now watching', episode: 'Episode' },
+  es: { arcMaster: 'MAESTRO DE ARCOS', settings: 'Ajustes', resumeAt: 'Punto de reanudación', history: 'Tu historial aparece aquí', resume: 'Reanudar reproducción', completed: 'completados', loading: 'Cargando episodios…', resumePosition: 'Reanudar desde el punto guardado', newStart: 'Inicio del episodio nuevo', speed: 'Velocidad', source: 'Fuente', autoAdvance: 'Reproducir automáticamente el siguiente episodio', markCompleted: 'Marcar este episodio como visto', markArcCompleted: 'Marcar todos los episodios de este arco como vistos', markThroughCurrent: 'Marcar como visto todo hasta este episodio', reset: 'Restablecer el progreso de este episodio', language: 'Idioma', backup: 'Copia de seguridad', exportData: 'Exportar todo el progreso y los ajustes', importData: 'Importar todo el progreso y los ajustes', importPrompt: 'La copia se combinará con los datos actuales. ¿Continuar?', importAdded: 'Episodios nuevos', importUpdated: 'Episodios actualizados', importKept: 'Episodios completados conservados', importInvalid: 'Registros inválidos omitidos', importSuccess: 'Copia de seguridad importada correctamente.', importError: 'No se pudo leer la copia de seguridad o no es válida.', openArc: 'Abrir Maestro de Arcos', closeArc: 'Cerrar Maestro de Arcos', nextIn: 'Siguiente episodio en', cancel: 'Cancelar', watching: 'Viendo ahora', episode: 'Episodio' }
 };
 
 function t(key) {
@@ -68,43 +68,6 @@ function getSyncStorage(key) {
 
 function setSyncStorage(value) {
   return new Promise((resolve) => chrome.storage.sync.set(value, resolve));
-}
-
-function exportBackup() {
-  const backup = globalThis.OnePaceBackup.createBackup({
-    progress: progressRecords,
-    settings
-  });
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `onepace-utilities-backup-${backup.exportedAt.slice(0, 10)}.json`;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function formatImportSummary(summary) {
-  return `${t('importPrompt')}\n\n${t('importAdded')}: ${summary.added}\n${t('importUpdated')}: ${summary.updated}\n${t('importKept')}: ${summary.keptCompleted}\n${t('importInvalid')}: ${summary.invalid}`;
-}
-
-async function importBackup(file) {
-  try {
-    const backup = globalThis.OnePaceBackup.parseBackup(await file.text());
-    const merged = globalThis.OnePaceBackup.mergeProgressRecords(progressRecords, backup.progress);
-    if (!confirm(formatImportSummary(merged.summary))) return;
-    const importedSettings = globalThis.OnePaceBackup.sanitizeSettings(backup.settings);
-    progressRecords = merged.records;
-    settings = { ...settings, ...importedSettings };
-    await Promise.all([
-      setStorage({ [PROGRESS_KEY]: progressRecords }),
-      setSyncStorage({ [SETTINGS_KEY]: settings })
-    ]);
-    render();
-    alert(t('importSuccess'));
-  } catch {
-    alert(t('importError'));
-  }
 }
 
 function parseGroups() {
@@ -374,7 +337,7 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     <label><input type="checkbox" data-setting="useResume" ${settings.useResume ? 'checked' : ''}> ${t('resumePosition')}</label>
     <label>${t('newStart')} <input type="number" min="0" data-setting="customStartSeconds" value="${settings.customStartSeconds}"> sn</label>
     <label>${t('speed')} <select data-setting="playbackRate">${[1, 1.25, 1.5, 2].map((rate) => `<option value="${rate}" ${settings.playbackRate === rate ? 'selected' : ''}>${rate}×</option>`).join('')}</select></label>
-    <section class="opu-backup"><strong>${t('backup')}</strong><div><button data-action="export-backup">${t('exportData')}</button><button data-action="import-backup">${t('importData')}</button><input type="file" accept="application/json,.json" data-input="backup" hidden></div></section>
+    <section class="opu-backup"><strong>${t('backup')}</strong><div><button data-action="export-setup">${t('exportData')}</button><button data-action="import-setup">${t('importData')}</button><input type="file" accept="application/json,.json" data-input="setup" hidden></div></section>
   `;
   document.body.append(drawer);
 
@@ -387,14 +350,14 @@ function render({ applyStartPosition = false, centerActiveEpisode = false } = {}
     render();
   });
   drawer.querySelector('[data-action="close-settings"]').addEventListener('click', () => { drawer.hidden = true; });
-  drawer.querySelector('[data-action="export-backup"]').addEventListener('click', exportBackup);
-  drawer.querySelector('[data-action="import-backup"]').addEventListener('click', () => {
-    drawer.querySelector('[data-input="backup"]').click();
-  });
-  drawer.querySelector('[data-input="backup"]').addEventListener('change', async (event) => {
-    const [file] = event.currentTarget.files ?? [];
-    if (file) await importBackup(file);
-    event.currentTarget.value = '';
+  globalThis.OnePaceBackup.bindSetupControls(drawer, {
+    prompt: t('importPrompt'),
+    added: t('importAdded'),
+    updated: t('importUpdated'),
+    kept: t('importKept'),
+    invalid: t('importInvalid'),
+    success: t('importSuccess'),
+    error: t('importError')
   });
   drawer.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
     const key = control.dataset.setting;

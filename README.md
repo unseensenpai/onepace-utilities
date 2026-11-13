@@ -36,8 +36,8 @@ On these sites, Arc Master groups One Piece episodes by story arc and tags canon
 - 15-second seek buttons and ← / → shortcuts
 - A **next episode** button over the player during the last 30 seconds. Using it marks the episode as watched. If the episode simply ends, the next one starts after a 5-second countdown.
 - AnimPow: an optional setting that blocks the site's online-user WebSocket
-- TRanimeizle: the first video source is selected automatically, through the site's pre-video screen
-- TRanimeizle: the fansub row, hidden ad players and the transparent click-catching layer over the player are removed, so one click starts playback
+- TRanimeizle: the site's own players (AitrVip, AitrVip2) are controlled directly; the fansub and player buttons stay under the player for switching sources
+- TRanimeizle: hidden ad players are removed and the site's in-page episode links reload the page so tracking follows the new episode
 - One Piece episode titles on the episode cards and under the current episode, in Turkish, English, or Spanish (following the browser language). English and most Spanish titles come from Wikipedia; Turkish titles and the remaining Spanish ones are translations.
 
 ### Installation
@@ -99,8 +99,8 @@ Bu sitelerde Arc Master, One Piece bölümlerini hikâye arc'larına göre grupl
 - 15 saniye ileri/geri sarma düğmeleri ve ← / → kısayolları
 - Son 30 saniyede oynatıcının üzerinde **sıradaki bölüm** düğmesi; basınca bölüm izlendi sayılır. Bölüm kendiliğinden biterse sıradaki bölüm 5 saniyelik geri sayımla açılır.
 - AnimPow: sitenin çevrimiçi kullanıcı WebSocket bağlantısını engelleyen isteğe bağlı ayar
-- TRanimeizle: ilk video kaynağı, sitenin ön video ekranı da geçilerek otomatik seçilir
-- TRanimeizle: fansub satırı, gizli reklam oynatıcıları ve oynatıcının üstündeki görünmez tıklama katmanı kaldırılır; oynatma tek tıkla başlar
+- TRanimeizle: sitenin kendi oynatıcıları (AitrVip, AitrVip2) doğrudan kontrol edilir; kaynak değiştirmek için fansub ve oynatıcı düğmeleri oynatıcının altında kalır
+- TRanimeizle: gizli reklam oynatıcıları kaldırılır; sitenin sayfa içi bölüm bağlantıları sayfayı yeniler, böylece takip yeni bölüme geçer
 - Bölüm kartlarında ve mevcut bölümün altında One Piece bölüm isimleri; tarayıcı diline göre Türkçe, İngilizce veya İspanyolca. İngilizce ve İspanyolca isimlerin çoğu Wikipedia'dan gelir; Türkçe isimler ve kalan İspanyolca isimler çeviridir.
 
 ### Kurulum
@@ -162,8 +162,8 @@ En estos sitios, el Maestro de Arcos agrupa los episodios de One Piece por arcos
 - Botones para avanzar o retroceder 15 segundos y atajos ← / →
 - Un botón de **siguiente episodio** sobre el reproductor durante los últimos 30 segundos, que marca el episodio como visto. Si el episodio termina sin más, el siguiente empieza tras una cuenta atrás de 5 segundos.
 - AnimPow: un ajuste opcional que bloquea el WebSocket de usuarios en línea del sitio
-- TRanimeizle: la primera fuente de vídeo se selecciona automáticamente, pasando por la pantalla previa del sitio
-- TRanimeizle: se eliminan la fila de fansubs, los reproductores de anuncios ocultos y la capa transparente que capturaba el primer clic sobre el reproductor, así que un solo clic inicia la reproducción
+- TRanimeizle: los reproductores propios del sitio (AitrVip, AitrVip2) se controlan directamente; los botones de fansub y de reproductor quedan bajo el reproductor para cambiar de fuente
+- TRanimeizle: se eliminan los reproductores de anuncios ocultos y los enlaces de episodio internos del sitio recargan la página para que el seguimiento pase al nuevo episodio
 - Títulos de los episodios de One Piece en las tarjetas y bajo el episodio actual, en turco, inglés o español (según el idioma del navegador). Los títulos en inglés y la mayoría de los españoles vienen de Wikipedia; los turcos y el resto de los españoles son traducciones.
 
 ### Instalación
@@ -213,7 +213,7 @@ OnePace Utilities targets Chromium-based browsers and currently integrates with:
 
 - OnePaceTR, with its Clone (AbyssPlayer), Sibnet, and Google Drive embeds
 - AnimPow (`animpow.com`), whose player runs on the page itself
-- TRanimeizle (`tranimeizle.live`, `tranimeizle.io`), with its AitrVip (`optraco.top`) embed tested. Sibnet and Google Drive embeds are supported too. Mail.ru, MixDrop, Vidmoly, Vudeo, Yourupload, and Mega are enabled but not yet tested.
+- TRanimeizle (`tranimeizle.live`, `tranimeizle.io`), with its in-page AitrVip and AitrVip2 players tested. Sibnet and Google Drive embeds are supported too. Mail.ru, MixDrop, Vidmoly, Vudeo, Yourupload, and Mega are enabled but not yet tested.
 
 ## Disclaimer
 

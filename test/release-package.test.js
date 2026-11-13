@@ -32,7 +32,7 @@ test('loads the AnimPow core before its page content script on every AnimPow pag
   const entry = manifest.content_scripts.find((item) => item.matches.includes('https://animpow.com/*'));
 
   assert.ok(entry, 'AnimPow content script entry is missing');
-  assert.deepEqual(entry.js, ['src/shared/animpow-core.js', 'src/shared/one-piece-titles.js', 'src/content/animpow.js']);
+  assert.deepEqual(entry.js, ['src/shared/backup.js', 'src/shared/animpow-core.js', 'src/shared/one-piece-titles.js', 'src/content/animpow.js']);
   assert.deepEqual(entry.css, ['src/content/animpow.css']);
 });
 
@@ -41,7 +41,7 @@ test('loads the shared arc data and TRanimeizle core before its page content scr
   const entry = manifest.content_scripts.find((item) => item.matches.includes('https://www.tranimeizle.live/*'));
 
   assert.ok(entry, 'TRanimeizle content script entry is missing');
-  assert.deepEqual(entry.js, ['src/shared/animpow-core.js', 'src/shared/one-piece-titles.js', 'src/shared/tranime-core.js', 'src/content/tranime.js']);
+  assert.deepEqual(entry.js, ['src/shared/backup.js', 'src/shared/animpow-core.js', 'src/shared/one-piece-titles.js', 'src/shared/tranime-core.js', 'src/content/tranime.js']);
   assert.deepEqual(entry.css, ['src/content/animpow.css', 'src/content/tranime.css']);
 });
 

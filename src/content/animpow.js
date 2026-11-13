@@ -350,10 +350,12 @@ function renderSettings() {
     <label><input type="checkbox" data-setting="autoAdvance" ${settings.autoAdvance ? 'checked' : ''}> Sonraki bölüme otomatik geç</label>
     <label><input type="checkbox" data-setting="blockSocket" ${settings.blockSocket ? 'checked' : ''}> Sitenin WebSocket bağlantısını engelle</label>
     <label><input type="checkbox" data-setting="focusMode" ${settings.focusMode ? 'checked' : ''}> Odak modu (site arayüzünü gizle)</label>
-    <p>Klavye: ← / → ${SEEK_STEP_SECONDS} sn geri / ileri</p>`;
+    <p>Klavye: ← / → ${SEEK_STEP_SECONDS} sn geri / ileri</p>
+    <section class="apw-backup"><strong>Yedekleme (tüm siteler)</strong><div><button type="button" data-action="export-setup">Tüm ilerleme ve ayarları dışa aktar</button><button type="button" data-action="import-setup">Tüm ilerleme ve ayarları içe aktar</button><input type="file" accept="application/json,.json" data-input="setup" hidden></div></section>`;
   document.body.append(drawer);
   keepNativeScroll(drawer);
   drawer.querySelector('[data-action="close-settings"]').addEventListener('click', () => { drawer.hidden = true; });
+  globalThis.OnePaceBackup.bindSetupControls(drawer);
   drawer.querySelectorAll('[data-setting]').forEach((control) => control.addEventListener('change', async () => {
     const key = control.dataset.setting;
     settings[key] = control.type === 'checkbox' ? control.checked : Math.max(0, Number(control.value) || 0);

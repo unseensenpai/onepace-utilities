@@ -72,6 +72,9 @@ html.apw-focus [data-apw="source"]{display:block!important;margin:12px auto 0!im
 #apw-settings header,#apw-settings label{align-items:center;display:flex;gap:8px;justify-content:space-between}
 #apw-settings input[type=number]{background:#171b21;border:1px solid #46505d;border-radius:7px;color:#fff;padding:5px;width:70px}
 #apw-settings p{color:#abb5c3;font-size:.92em;margin:0}
+.apw-backup{border-top:1px solid #46505d;display:grid;gap:8px;padding-top:10px}
+.apw-backup>div{display:grid;gap:7px}
+#apw-settings .apw-backup button{width:100%}
 
 @media (max-width:991px){
   html.apw-focus.apw-panel-open body{padding-right:0!important}

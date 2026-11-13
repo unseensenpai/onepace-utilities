@@ -110,3 +110,55 @@ test('falls back to position when an imported progress timestamp is not a string
   assert.equal(result.records[0].positionSeconds, 240);
   assert.equal(result.records[0].updatedAt, '');
 });
+
+test('exports every site in a full setup backup and leaves unrelated keys out', async () => {
+  const api = await getBackupApi();
+  const backup = api.createSetupBackup({
+    local: { onepaceProgress: [], animpowProgress: [], tranimeProgress: [], animpowMaxEpisode: 1180, onepacePanelScroll: 40 },
+    sync: { onepaceSettings: { playbackRate: 2 }, animpowSettings: {}, tranimeSettings: { focusMode: false } },
+    exportedAt: '2026-11-13T00:00:00.000Z'
+  });
+
+  assert.equal(backup.schemaVersion, 2);
+  assert.deepEqual(Object.keys(backup.local).sort(), ['animpowMaxEpisode', 'animpowProgress', 'onepaceProgress', 'tranimeProgress']);
+  assert.deepEqual(Object.keys(backup.sync).sort(), ['animpowSettings', 'onepaceSettings', 'tranimeSettings']);
+  assert.equal(api.parseSetupBackup(JSON.stringify(backup)).sync.tranimeSettings.focusMode, false);
+  assert.throws(() => api.parseSetupBackup('{"schemaVersion":2,"local":[],"sync":{}}'));
+});
+
+test('imports an older OnePaceTR-only backup as OnePaceTR data', async () => {
+  const api = await getBackupApi();
+  const legacy = api.createBackup({ progress: [{ episodeNumber: 5, state: 'completed', positionSeconds: 1, durationSeconds: 1 }], settings: { playbackRate: 1.5 } });
+  const parsed = api.parseSetupBackup(JSON.stringify(legacy));
+
+  assert.equal(parsed.local.onepaceProgress[0].episodeNumber, 5);
+  assert.equal(parsed.sync.onepaceSettings.playbackRate, 1.5);
+});
+
+test('merges a setup backup per site without regressing completed episodes', async () => {
+  const api = await getBackupApi();
+  const record = (episodeNumber, state, positionSeconds, updatedAt) => ({
+    episodeKey: `tranime:one-piece:${episodeNumber}`, coreId: 'tranime:one-piece', episodeNumber, state, positionSeconds, durationSeconds: 1420, updatedAt
+  });
+  const current = {
+    local: { tranimeProgress: [record(1170, 'completed', 1420, '2026-11-01T00:00:00Z'), record(1171, 'in-progress', 100, '2026-11-01T00:00:00Z')], animpowMaxEpisode: 1100 },
+    sync: { tranimeSettings: { focusMode: true, playbackRate: 1 } }
+  };
+  const backup = {
+    local: {
+      tranimeProgress: [record(1170, 'in-progress', 50, '2026-11-12T00:00:00Z'), record(1171, 'in-progress', 600, '2026-11-12T00:00:00Z'), record(1172, 'in-progress', 30, '2026-11-12T00:00:00Z'), { episodeKey: 'x' }],
+      animpowMaxEpisode: 1180
+    },
+    sync: { tranimeSettings: { playbackRate: 2, panelOpen: false, injected: '<b>' } }
+  };
+  const merged = api.mergeSetup(current, backup);
+  const byEpisode = Object.fromEntries(merged.local.tranimeProgress.map((item) => [item.episodeNumber, item]));
+
+  assert.equal(byEpisode[1170].state, 'completed');
+  assert.equal(byEpisode[1171].positionSeconds, 600);
+  assert.ok(byEpisode[1172]);
+  assert.equal(merged.local.animpowMaxEpisode, 1180);
+  assert.equal(merged.local.onepaceProgress, undefined, 'sites missing from the backup are left alone');
+  assert.equal(JSON.stringify(merged.sync.tranimeSettings), JSON.stringify({ focusMode: true, playbackRate: 2, panelOpen: false }));
+  assert.equal(JSON.stringify(merged.summary), JSON.stringify({ added: 1, updated: 1, keptCompleted: 1, unchanged: 0, invalid: 1 }));
+});

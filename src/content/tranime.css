@@ -1,17 +1,21 @@
-/* TRanimeizle on top of animpow.css: undo the site's bootstrap columns inside the kept branch and
-   hide the fansub selector and lay the source list out as a compact button row above the player. */
+/* TRanimeizle on top of animpow.css: undo the site's flex/grid columns inside the kept branch and
+   let the player fill its 16:9 box. */
 html.apw-focus [data-apw="keep"]{float:none!important;height:auto!important;max-height:none!important;min-height:0!important}
-html.apw-focus #videoPlayer iframe{border:0;display:block;height:100%!important;width:100%!important}
-html.apw-focus [data-apw="source"]{background:transparent!important;float:none!important;height:auto!important;max-height:none!important;overflow:visible!important;width:auto!important}
-/* The site positions the source list as a sidebar and sizes its buttons; make it a compact row. */
-html.apw-focus .videoSource-playlist,html.apw-focus .videoSource-items,html.apw-focus .videoSource-items ol{inset:auto!important;position:static!important;transform:none!important;white-space:normal!important;width:100%!important}
-html.apw-focus .videoSource-items ol{display:flex!important;flex-wrap:wrap!important;gap:6px;list-style:none;margin:0!important;padding:8px 12px!important}
-html.apw-focus .videoSource-items .sourceBtn{align-items:center;background:#343c48!important;border:0!important;border-radius:8px!important;color:#fff!important;cursor:pointer;display:inline-flex!important;flex:0 0 auto!important;font:600 13px/1.2 system-ui,sans-serif!important;height:auto!important;margin:0!important;max-width:none!important;min-height:0!important;min-width:0!important;padding:7px 12px!important;width:auto!important}
-html.apw-focus .videoSource-items .sourceBtn.selected{background:#318dca!important}
-html.apw-focus .videoSource-items .sourceBtn *{color:inherit!important;font:inherit!important;height:auto!important;margin:0!important;padding:0!important}
-html.apw-focus .videoSource-items .sourceBtn::before,html.apw-focus .videoSource-items .sourceBtn ::before{font:inherit!important;margin-right:4px!important;opacity:.7;position:static!important}
-html.apw-focus .videoSource-items .sourceBtn small,html.apw-focus .videoSource-items .sourceBtn br{display:none!important}
-/* The fansub selector stays hidden even when it shares a kept branch with the player. */
-html.apw-focus .playlist-title:has(.fansubSelector),html.apw-focus .fansubSelector{display:none!important}
-/* A transparent full-size ad layer over the player swallows the first click (and plays an ad sound). */
+html.apw-focus [data-apw="player"]{border:0!important;box-shadow:none!important}
+html.apw-focus [data-watch-player] iframe{border:0;display:block;height:100%!important;width:100%!important}
+/* Desktop: the player fills the whole area left of the panel; the video letterboxes inside it. The
+   JW Player (.jw-aspect padding) and the AitrVip2 skin (aspect-video) size themselves to 16:9. */
+@media (min-width:992px){
+  html.apw-focus [data-apw="player"]{aspect-ratio:auto!important;border-radius:0!important;height:100vh!important;max-width:none!important;width:100%!important}
+  html.apw-focus [data-apw="player"]>*,html.apw-focus [data-apw="player"] :is(.native-jw,.jw-mount,.jwplayer,video-skin){aspect-ratio:auto!important;border-radius:0!important;height:100%!important}
+  html.apw-focus [data-apw="player"] .jwplayer>.jw-aspect{display:none!important}
+}
+/* A transparent full-size ad layer over the player swallows the first click (and opens an ad). */
 [class*="df-ovrly"]{display:none!important;pointer-events:none!important}
+/* Fansub and player chips in the panel, mirroring the site's hidden source card. */
+.apw-sources{display:grid;gap:6px}
+.apw-sources:empty{display:none}
+.apw-sources div{align-items:center;display:flex;flex-wrap:wrap;gap:5px}
+.apw-sources span{color:#abb5c3;font-size:.68em;letter-spacing:.06em;text-transform:uppercase;width:62px}
+#apw-panel .apw-sources button{font-size:.72em;padding:5px 9px}
+#apw-panel .apw-sources button.selected{background:#318dca}
